@@ -1,12 +1,17 @@
 // js/data.js
 
-// 1. เก็บข้อมูลงานวิ่ง (Global Variable)
+// ประกาศตัวแปร Global
 var eventsData = [];
-const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน"];
 
-// 2. ฟังก์ชันสร้างข้อมูลจำลอง (เหมือนเดิมเป๊ะ)
+// Config ภาษาสำหรับข้อมูล
+const monthNamesData = {
+    th: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน"],
+    en: ["January", "February", "March", "April", "May", "June"]
+};
+
+// ฟังก์ชันสร้างข้อมูล (เรียกใช้ได้ทุกหน้า)
 function generateEvents() {
-    eventsData = []; // ล้างข้อมูลเก่าก่อนสร้างใหม่
+    eventsData = []; // ล้างค่าเก่า
     
     const provinces = [
         {th: "เชียงใหม่", en: "Chiang Mai"}, 
@@ -24,10 +29,11 @@ function generateEvents() {
         const daysInMonth = new Date(2026, month + 1, 0).getDate();
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `2026-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Logic สุ่มจำนวนงาน
             let eventCount = 0;
             const date = new Date(2026, month, day);
-            
-            if (date.getDay() === 0) eventCount = Math.floor(Math.random() * 8) + 8;
+            if (date.getDay() === 0) eventCount = Math.floor(Math.random() * 5) + 5; // วันอาทิตย์เยอะหน่อย
             else if (date.getDay() === 6) eventCount = Math.floor(Math.random() * 3) + 1;
             else eventCount = Math.random() > 0.8 ? 1 : 0;
 
@@ -36,23 +42,22 @@ function generateEvents() {
                 const type = types[Math.floor(Math.random() * types.length)];
                 const isOpen = Math.random() > 0.2; 
                 
-                // กำหนดภาษา (ใช้ th เป็นหลักในไฟล์นี้)
-                const provName = provObj.th;
-                
+                // สร้าง ID ที่ไม่ซ้ำกัน เพื่อใช้ลิงก์หากัน
+                const id = `evt-${month}-${day}-${i}`; 
+
                 eventsData.push({
-                    id: `evt-2026-${month}-${day}-${i}`, // ID สำคัญมาก ต้องไม่ซ้ำ
-                    title: `${provName} ${type} Challenge ${month+1}.${i}`,
+                    id: id,
+                    title_th: `${provObj.th} ${type} ชาเลนจ์ ${month+1}.${i}`,
+                    title_en: `${provObj.en} ${type} Challenge ${month+1}.${i}`,
                     date: dateStr,
-                    location: provName,
+                    location_th: provObj.th,
+                    location_en: provObj.en,
                     type: type,
-                    distance: type === "Trail" ? "50K" : "10K",
+                    distance: type === "Trail" ? "50K, 25K" : "10K, 5K",
                     image: `https://source.unsplash.com/random/800x600/?running,${type},${i}`,
                     status: isOpen ? 'open' : 'closed',
-                    label: isOpen ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร',
-                    link: '#',
                     submitter: 'System',
-                    email: '-',
-                    phone: '-'
+                    email: 'contact@action.in.th'
                 });
             }
         }
@@ -60,5 +65,5 @@ function generateEvents() {
     console.log("Data Generated:", eventsData.length, "events");
 }
 
-// สั่งให้สร้างข้อมูลทันทีที่ไฟล์นี้ถูกโหลด
+// สร้างข้อมูลทันที
 generateEvents();

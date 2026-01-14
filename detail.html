@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายละเอียดกิจกรรม - Action.in.th</title>
+    <title>Event Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -19,90 +19,61 @@
 </head>
 <body class="bg-slate-50 font-sans antialiased flex flex-col min-h-screen">
 
-    <div id="navbar-app"></div>
+    <div class="h-16 bg-white shadow-sm mb-8 flex items-center justify-center text-slate-400">Navbar Area</div>
 
-    <main class="w-full max-w-4xl mx-auto px-4 py-10 flex-grow">
-        
+    <main class="w-full max-w-5xl mx-auto px-4 flex-grow">
         <a href="index.html" class="inline-flex items-center text-slate-500 hover:text-brand-600 mb-6 transition">
-            ← กลับไปหน้าตารางกิจกรรม
+            ← Back to Calendar
         </a>
 
-        <div id="detail-content" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px]">
-            <div class="p-10 text-center text-slate-400">กำลังโหลดข้อมูล...</div>
+        <div id="content" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px]">
+            <div class="p-20 text-center text-slate-400">Loading...</div>
         </div>
-
     </main>
 
-    <div id="footer-app"></div>
-
     <script src="js/data.js"></script>
-    <script src="js/components.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. อ่านค่า ID จาก URL (เช่น detail.html?id=evt-123)
-            const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get('id');
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const lang = params.get('lang') || 'th';
 
-            // 2. ค้นหาข้อมูลใน eventsData (จาก data.js) ที่มี ID ตรงกัน
-            const event = eventsData.find(e => e.id === eventId);
+            const event = eventsData.find(e => e.id === id);
+            const container = document.getElementById('content');
 
-            const contentDiv = document.getElementById('detail-content');
+            if(event) {
+                // เลือกภาษา
+                const title = lang === 'th' ? event.title_th : event.title_en;
+                const loc = lang === 'th' ? event.location_th : event.location_en;
+                const btnText = lang === 'th' ? 'สมัครแข่งขัน' : 'Register Now';
 
-            if (event) {
-                // 3. ถ้าเจอข้อมูล ให้แสดงผล
-                contentDiv.innerHTML = `
-                    <div class="relative h-64 md:h-80 w-full">
+                container.innerHTML = `
+                    <div class="h-64 md:h-80 w-full relative">
                         <img src="${event.image}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/40 flex items-end p-6 md:p-8">
+                        <div class="absolute inset-0 bg-black/50 flex items-end p-8">
                             <div class="text-white">
                                 <span class="bg-brand-600 px-3 py-1 rounded text-xs font-bold mb-2 inline-block">${event.type}</span>
-                                <h1 class="text-3xl md:text-4xl font-bold text-shadow">${event.title}</h1>
+                                <h1 class="text-3xl md:text-4xl font-bold">${title}</h1>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="md:col-span-2 space-y-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 mb-2">รายละเอียด</h3>
-                                <p class="text-slate-600">วันที่จัดงาน: <span class="font-semibold">${event.date}</span></p>
-                                <p class="text-slate-600">สถานที่: <span class="font-semibold">${event.location}</span></p>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 mb-2">ระยะทาง</h3>
-                                <div class="inline-block bg-slate-100 px-4 py-2 rounded-lg font-bold text-slate-700 border border-slate-200">
-                                    ${event.distance}
-                                </div>
-                            </div>
+                    <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 space-y-4">
+                            <h3 class="text-lg font-bold text-slate-900 border-b pb-2">Information</h3>
+                            <p class="text-slate-600">📅 Date: <b>${event.date}</b></p>
+                            <p class="text-slate-600">📍 Location: <b>${loc}</b></p>
+                            <p class="text-slate-600">🏃 Distance: <b>${event.distance}</b></p>
                         </div>
-
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit">
-                            <div class="text-center mb-4">
-                                <div class="text-sm text-slate-500 mb-1">สถานะ</div>
-                                <div class="text-xl font-bold ${event.status === 'open' ? 'text-green-600' : 'text-red-600'}">
-                                    ${event.label}
-                                </div>
-                            </div>
-                            <button onclick="alert('ไปหน้าสมัครของเว็บผู้จัด...')" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl hover:bg-brand-700 shadow-md transition transform active:scale-95">
-                                สมัครแข่งขัน
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit text-center">
+                            <div class="text-xl font-bold text-emerald-600 mb-4">${event.status}</div>
+                            <button class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl hover:bg-brand-700 shadow-md transition transform active:scale-95">
+                                ${btnText}
                             </button>
-                            <div class="mt-4 pt-4 border-t border-slate-200 text-xs text-slate-500 text-center">
-                                ผู้ติดต่อ: ${event.submitter}<br>
-                                อีเมล: ${event.email}
-                            </div>
                         </div>
                     </div>
                 `;
             } else {
-                // 4. ถ้าไม่เจอ (เช่น ID มั่ว)
-                contentDiv.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-64 text-slate-400">
-                        <div class="text-4xl mb-2">❌</div>
-                        <p>ไม่พบข้อมูลกิจกรรมนี้</p>
-                        <a href="index.html" class="mt-4 text-brand-600 underline">กลับหน้าหลัก</a>
-                    </div>
-                `;
+                container.innerHTML = `<div class="p-20 text-center text-slate-400">Event Not Found</div>`;
             }
         });
     </script>
