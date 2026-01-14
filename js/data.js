@@ -1,69 +1,75 @@
 // js/data.js
 
-// ประกาศตัวแปร Global
+// 1. ตัวแปรเก็บข้อมูล
 var eventsData = [];
 
-// Config ภาษาสำหรับข้อมูล
-const monthNamesData = {
-    th: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน"],
-    en: ["January", "February", "March", "April", "May", "June"]
+// 2. ข้อมูลภาษา (Static Text)
+const translations = {
+    th: {
+        nav_home: "หน้าแรก", nav_calendar: "ปฏิทินกิจกรรม", nav_login: "เข้าสู่ระบบ", btn_submit: "ฝากกิจกรรม",
+        header_title: "ตารางกิจกรรม", header_subtitle: "รวมงานวิ่งทั่วไทย", view_list: "รายการ", view_calendar: "ปฏิทิน",
+        search_ph: "ค้นหาชื่อรายการ...", filter_month_all: "ทุกเดือน", filter_prov_all: "ทุกจังหวัด", filter_type_all: "ทุกประเภท",
+        month_feb: "กุมภาพันธ์", month_mar: "มีนาคม", month_apr: "เมษายน", btn_search: "ค้นหา",
+        cal_scroll_hint: "เลื่อนซ้าย-ขวา เพื่อดูตาราง", modal_subtitle: "กิจกรรมทั้งหมดในวันนี้", btn_close: "ปิด",
+        btn_apply: "สมัคร", btn_detail: "ดูรายละเอียด", status_open: "เปิดรับสมัคร", status_closed: "เต็มแล้ว",
+        status_pending: "รอตรวจสอบ", alert_saved: "บันทึกข้อมูลเรียบร้อยแล้ว!", no_event: "ไม่พบกิจกรรม",
+        calendar_headers: ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."],
+        months_full: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน"]
+    },
+    en: {
+        nav_home: "Home", nav_calendar: "Calendar", nav_login: "Login", btn_submit: "Submit Event",
+        header_title: "Event Calendar", header_subtitle: "Running events in Thailand", view_list: "List", view_calendar: "Calendar",
+        search_ph: "Search events...", filter_month_all: "All Months", filter_prov_all: "All Provinces", filter_type_all: "All Types",
+        month_feb: "February", month_mar: "March", month_apr: "April", btn_search: "Search",
+        cal_scroll_hint: "Swipe to view", modal_subtitle: "All events on this day", btn_close: "Close",
+        btn_apply: "Register", btn_detail: "Details", status_open: "Open", status_closed: "Closed",
+        status_pending: "Pending", alert_saved: "Event saved successfully!", no_event: "No events found",
+        calendar_headers: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        months_full: ["January", "February", "March", "April", "May", "June"]
+    }
 };
 
-// ฟังก์ชันสร้างข้อมูล (เรียกใช้ได้ทุกหน้า)
+// 3. ฟังก์ชันสร้างข้อมูลจำลอง (Mock Data)
 function generateEvents() {
-    eventsData = []; // ล้างค่าเก่า
-    
+    eventsData = [];
     const provinces = [
-        {th: "เชียงใหม่", en: "Chiang Mai"}, 
-        {th: "ชลบุรี", en: "Chonburi"}, 
-        {th: "ภูเก็ต", en: "Phuket"}, 
-        {th: "ราชบุรี", en: "Ratchaburi"}, 
-        {th: "กาญจนบุรี", en: "Kanchanaburi"}, 
-        {th: "กรุงเทพ", en: "Bangkok"}, 
-        {th: "ขอนแก่น", en: "Khon Kaen"}
+        {th: "เชียงใหม่", en: "Chiang Mai"}, {th: "ชลบุรี", en: "Chonburi"}, {th: "ภูเก็ต", en: "Phuket"},
+        {th: "ราชบุรี", en: "Ratchaburi"}, {th: "กาญจนบุรี", en: "Kanchanaburi"}, {th: "กรุงเทพ", en: "Bangkok"}
     ];
     const types = ["Trail", "Road", "Fun Run", "Triathlon"];
     
-    // สร้างข้อมูลเดือน 1-3 ปี 2026
     for (let month = 1; month <= 3; month++) {
         const daysInMonth = new Date(2026, month + 1, 0).getDate();
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `2026-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            
-            // Logic สุ่มจำนวนงาน
-            let eventCount = 0;
             const date = new Date(2026, month, day);
-            if (date.getDay() === 0) eventCount = Math.floor(Math.random() * 5) + 5; // วันอาทิตย์เยอะหน่อย
+            let eventCount = 0;
+            
+            if (date.getDay() === 0) eventCount = Math.floor(Math.random() * 6) + 4;
             else if (date.getDay() === 6) eventCount = Math.floor(Math.random() * 3) + 1;
             else eventCount = Math.random() > 0.8 ? 1 : 0;
 
             for (let i = 1; i <= eventCount; i++) {
-                const provObj = provinces[Math.floor(Math.random() * provinces.length)];
+                const prov = provinces[Math.floor(Math.random() * provinces.length)];
                 const type = types[Math.floor(Math.random() * types.length)];
-                const isOpen = Math.random() > 0.2; 
+                const isOpen = Math.random() > 0.2;
                 
-                // สร้าง ID ที่ไม่ซ้ำกัน เพื่อใช้ลิงก์หากัน
-                const id = `evt-${month}-${day}-${i}`; 
-
                 eventsData.push({
-                    id: id,
-                    title_th: `${provObj.th} ${type} ชาเลนจ์ ${month+1}.${i}`,
-                    title_en: `${provObj.en} ${type} Challenge ${month+1}.${i}`,
+                    id: `evt-${month}-${day}-${i}`,
+                    title_th: `${prov.th} ${type} ชาเลนจ์ ${month+1}.${i}`,
+                    title_en: `${prov.en} ${type} Challenge ${month+1}.${i}`,
                     date: dateStr,
-                    location_th: provObj.th,
-                    location_en: provObj.en,
+                    location_th: prov.th,
+                    location_en: prov.en,
                     type: type,
                     distance: type === "Trail" ? "50K, 25K" : "10K, 5K",
                     image: `https://source.unsplash.com/random/800x600/?running,${type},${i}`,
                     status: isOpen ? 'open' : 'closed',
-                    submitter: 'System',
-                    email: 'contact@action.in.th'
+                    link: '#',
+                    submitter: 'System', email: 'contact@action.in.th', phone: '-'
                 });
             }
         }
     }
-    console.log("Data Generated:", eventsData.length, "events");
 }
-
-// สร้างข้อมูลทันที
-generateEvents();
+generateEvents(); // รันทันทีเมื่อไฟล์ถูกโหลด
