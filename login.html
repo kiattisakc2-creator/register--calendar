@@ -13,25 +13,53 @@
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
                         brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
-                        action: { 500: '#10b981', 600: '#059669' }
+                        action: { 500: '#10b981', 600: '#059669', 700: '#047857' }
                     }
                 }
             }
         }
     </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .container-wide { width: 100%; max-width: 95%; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1600px) { .container-wide { max-width: 1800px; } }
+        /* Modal Animation */
+        .modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .modal.active { opacity: 1; visibility: visible; }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans antialiased flex flex-col min-h-screen text-slate-800">
+<body class="bg-slate-50 font-sans antialiased flex flex-col min-h-screen text-slate-800" onclick="closeLangDropdown(event)">
 
     <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container-wide px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <a href="index.html" class="flex items-center gap-3 cursor-pointer">
                     <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">A</div>
                     <span class="font-bold text-xl text-slate-800">Action.in.th</span>
                 </a>
+                
                 <div class="flex items-center space-x-4">
-                    <a href="index.html" class="text-slate-500 hover:text-brand-600 text-sm font-medium">หน้าแรก</a>
-                    <a href="calendar.html" class="text-slate-500 hover:text-brand-600 text-sm font-medium">ปฏิทินกิจกรรม</a>
+                    <div class="hidden md:flex items-center space-x-3">
+                        <a href="index.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_home">หน้าแรก</a>
+                        <a href="calendar.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
+                        
+                        <button onclick="openSubmitModal()" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <span data-i18n="btn_submit">ฝากกิจกรรม</span>
+                        </button>
+                        
+                        <a href="login.html" class="bg-brand-50 text-brand-600 border border-brand-200 px-4 py-2 rounded-full text-sm font-bold transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
+                    </div>
+
+                    <div class="relative pl-2 border-l border-slate-200 md:border-none md:pl-0">
+                        <button onclick="toggleLangDropdown(event)" id="lang-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 transition">
+                            <span class="text-base">🇹🇭</span> TH
+                        </button>
+                        <div id="lang-menu" class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 hidden z-50">
+                            <button onclick="changeLanguage('th')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇹🇭 Thai</button>
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇬🇧 English</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -94,21 +122,99 @@
         &copy; 2026 Action.in.th - Designed for Runners
     </footer>
 
+    <div id="submit-modal" class="fixed inset-0 z-[70] flex items-center justify-center invisible opacity-0 modal">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSubmitModal()"></div>
+        <div class="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl z-20 flex flex-col max-h-[90vh] relative">
+            <div class="px-6 py-4 bg-action-500 rounded-t-2xl text-white font-bold flex justify-between items-center">
+                <span class="flex items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <span data-i18n="form_title">ฝากกิจกรรมใหม่</span>
+                </span>
+                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-white space-y-5">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_name">ชื่อกิจกรรม *</label><input type="text" id="new-title" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="เช่น Pattaya Beach Run 2026"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_date">วันที่ *</label><input type="date" id="new-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" value="2026-03-01"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_province">จังหวัด *</label><select id="new-province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option></select></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_type">ประเภท *</label><select id="new-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Road">Road</option><option value="Trail">Trail</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_dist">ระยะทาง</label><input type="text" id="new-distance" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="10K, 21K"></div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_link">ลิงก์รับสมัคร</label><input type="url" id="new-link" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="https://..."></div>
+                    </div>
+                </div>
+                <hr class="border-slate-200 my-2">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_contact_name">ชื่อผู้ติดต่อ *</label><input type="text" id="new-submitter" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="ชื่อ-นามสกุล"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_email">อีเมล</label><input type="email" id="new-email" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="name@email.com"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_tel">เบอร์โทร</label><input type="tel" id="new-phone" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="08x-xxx-xxxx"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-4">
+                    <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button onclick="handleFormSubmit()" class="flex-1 py-2.5 bg-action-500 rounded-xl text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
     <script>
+        let currentLang = 'th';
+
+        // --- 1. Login Logic ---
         function handleLogin(e) {
             e.preventDefault();
-            // จำลองการล็อกอิน (ในอนาคตค่อยต่อ Backend ตรงนี้)
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
-            
-            // เปลี่ยนปุ่มเป็นสถานะกำลังโหลด
             btn.innerText = 'กำลังเข้าสู่ระบบ...';
             btn.classList.add('opacity-75', 'cursor-not-allowed');
-            
             setTimeout(() => {
                 alert('เข้าสู่ระบบเรียบร้อย! (ระบบจำลอง)');
-                window.location.href = 'index.html'; // เด้งไปหน้าแรก
+                window.location.href = 'index.html'; 
             }, 1500);
+        }
+
+        // --- 2. Language & Navbar Logic ---
+        function t(key) { return translations[currentLang][key] || key; }
+        function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
+        function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
+            document.getElementById('lang-menu').classList.add('hidden');
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) el.innerText = translations[lang][key];
+            });
+            // Update Modal Placeholders
+            if(lang === 'th') {
+                document.getElementById('new-title').placeholder = "เช่น Pattaya Beach Run 2026";
+                document.getElementById('new-submitter').placeholder = "ชื่อ-นามสกุล";
+            } else {
+                document.getElementById('new-title').placeholder = "e.g. Pattaya Beach Run 2026";
+                document.getElementById('new-submitter').placeholder = "Full Name";
+            }
+        }
+
+        // --- 3. Modal Logic (เพื่อให้ Navbar กดได้) ---
+        function openSubmitModal() { document.getElementById('submit-modal').classList.remove('invisible'); document.getElementById('submit-modal').classList.add('active'); }
+        function closeSubmitModal() { document.getElementById('submit-modal').classList.remove('active'); setTimeout(()=>document.getElementById('submit-modal').classList.add('invisible'), 200); }
+        function handleFormSubmit() {
+            const title = document.getElementById('new-title').value;
+            if(!title) return alert("กรุณากรอกชื่อกิจกรรม");
+            alert(t('alert_saved'));
+            closeSubmitModal();
         }
     </script>
 </body>
