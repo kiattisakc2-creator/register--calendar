@@ -13,7 +13,7 @@
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
                         brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
-                        action: { 500: '#10b981', 600: '#059669', 700: '#047857' }
+                        action: { 500: '#10b981', 600: '#059669', 700: '#047857' } // สีเขียว Emerald ตามภาพ
                     },
                     boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
@@ -50,7 +50,7 @@
                         <a href="index.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium" data-i18n="nav_home">หน้าแรก</a>
                         <a href="index.html" class="text-brand-600 bg-brand-50 px-3 py-2 text-sm font-medium rounded-lg" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
                         <button onclick="openSubmitModal()" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                             <span data-i18n="btn_submit">ฝากกิจกรรม</span>
                         </button>
                         <a href="#" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-50 transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
@@ -108,93 +108,113 @@
     </main>
 
     <button onclick="openSubmitModal()" class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-action-500 hover:bg-action-600 text-white rounded-full shadow-lg flex items-center justify-center z-40 transition transform active:scale-95">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
     </button>
 
     <footer class="bg-white border-t border-slate-200 py-6 mt-auto text-center text-slate-400 text-sm">&copy; 2026 Action.in.th</footer>
+
+    <div id="detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center invisible opacity-0 modal">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="modal-content bg-white w-full max-w-lg mx-4 rounded-2xl shadow-2xl z-10 flex flex-col max-h-[85vh]">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                <div>
+                    <h3 id="modal-title" class="text-xl font-bold text-slate-800"></h3>
+                    <p class="text-xs text-slate-500 mt-0.5" data-i18n="modal_subtitle">กิจกรรมทั้งหมดในวันนี้</p>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100">✕</button>
+            </div>
+            <div id="modal-body" class="p-4 overflow-y-auto space-y-3 bg-white flex-grow"></div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium hover:bg-slate-50 text-slate-700 shadow-sm" data-i18n="btn_close">ปิด</button>
+            </div>
+        </div>
+    </div>
 
     <div id="submit-modal" class="fixed inset-0 z-[70] flex items-center justify-center invisible opacity-0 modal">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSubmitModal()"></div>
         <div class="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl z-20 flex flex-col max-h-[90vh] relative">
             <div class="px-6 py-4 bg-action-500 rounded-t-2xl text-white font-bold flex justify-between items-center">
-                <span class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                <span class="flex items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                     <span data-i18n="form_title">ฝากกิจกรรมใหม่</span>
                 </span>
-                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             
-            <div class="p-6 overflow-y-auto bg-slate-50 space-y-4">
+            <div class="p-6 overflow-y-auto bg-white space-y-5">
+                
                 <div>
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
-                    <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_name">ชื่อกิจกรรม</label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-title">
+                            <label class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="form_name">ชื่อกิจกรรม</span> <span class="text-red-500">*</span></label>
+                            <input type="text" id="new-title" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="เช่น Pattaya Beach Run 2026">
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_date">วันที่</label>
-                                <input type="date" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-date">
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="form_date">วันที่</span> <span class="text-red-500">*</span></label>
+                                <input type="date" id="new-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" value="2026-03-01">
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_province">จังหวัด</label>
-                                <select class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-province">
-                                    <option value="กรุงเทพ">กรุงเทพฯ</option>
-                                    <option value="เชียงใหม่">เชียงใหม่</option>
-                                    <option value="ชลบุรี">ชลบุรี</option>
-                                    <option value="ภูเก็ต">ภูเก็ต</option>
-                                    <option value="อื่นๆ">อื่นๆ</option>
+                             <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="form_province">จังหวัด</span> <span class="text-red-500">*</span></label>
+                                <select id="new-province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition bg-white">
+                                    <option value="Bangkok">Bangkok</option>
+                                    <option value="Chiang Mai">Chiang Mai</option>
+                                    <option value="Chonburi">Chonburi</option>
+                                    <option value="Phuket">Phuket</option>
+                                    <option value="Others">Others</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+    
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_type">ประเภท</label>
-                                <select class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-type">
+                                <label class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="form_type">ประเภท</span> <span class="text-red-500">*</span></label>
+                                <select id="new-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition bg-white">
                                     <option value="Road">Road</option>
                                     <option value="Trail">Trail</option>
                                     <option value="Triathlon">Triathlon</option>
-                                    <option value="Fun Run">Fun Run</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_dist">ระยะทาง</label>
-                                <input type="text" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-distance" placeholder="10K, 21K">
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_dist">ระยะทาง</label>
+                                <input type="text" id="new-distance" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="10K, 21K">
                             </div>
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_link">ลิงก์รับสมัคร</label>
-                            <input type="url" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-link" placeholder="https://...">
+                            <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_link">ลิงก์รับสมัคร / เว็บไซต์</label>
+                            <input type="url" id="new-link" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="https://...">
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-slate-200">
+                <hr class="border-slate-200 my-2">
 
                 <div>
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ</h4>
-                    <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ (ผู้ฝาก)</h4>
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_contact_name">ชื่อผู้ติดต่อ</label>
-                            <input type="text" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-submitter">
+                            <label class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="form_contact_name">ชื่อผู้ติดต่อ</span> <span class="text-red-500">*</span></label>
+                            <input type="text" id="new-submitter" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="ชื่อ-นามสกุล">
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_email">อีเมล</label>
-                                <input type="email" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-email">
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_email">อีเมล</label>
+                                <input type="email" id="new-email" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="name@email.com">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_tel">เบอร์โทร</label>
-                                <input type="tel" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-phone">
+                                <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_tel">เบอร์โทร</label>
+                                <input type="tel" id="new-phone" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 focus:border-action-500 outline-none transition" placeholder="08x-xxx-xxxx">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-2 flex gap-3">
-                    <button onclick="closeSubmitModal()" class="flex-1 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50" data-i18n="btn_cancel">ยกเลิก</button>
-                    <button onclick="handleFormSubmit()" class="flex-1 py-2 bg-action-500 rounded-lg text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
+                <div class="pt-4 flex gap-4">
+                    <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button onclick="handleFormSubmit()" class="flex-1 py-2.5 bg-action-500 rounded-xl text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
                 </div>
             </div>
         </div>
@@ -221,11 +241,21 @@
             });
             document.getElementById('search-input').placeholder = t('search_ph');
             
+            // Localize placeholders in modal
+            if(lang === 'th') {
+                document.getElementById('new-title').placeholder = "เช่น Pattaya Beach Run 2026";
+                document.getElementById('new-submitter').placeholder = "ชื่อ-นามสกุล";
+            } else {
+                document.getElementById('new-title').placeholder = "e.g. Pattaya Beach Run 2026";
+                document.getElementById('new-submitter').placeholder = "Full Name";
+            }
+            
             applyFilters(); 
         }
 
         function applyFilters() {
             const container = document.getElementById('list-view-container');
+            const calGrid = document.getElementById('calendar-grid');
             const search = document.getElementById('search-input').value.toLowerCase();
             const month = document.getElementById('month-filter').value;
             const typeVal = document.getElementById('type-filter').value;
@@ -319,23 +349,19 @@
         function handleFormSubmit() {
             const title = document.getElementById('new-title').value;
             const submitter = document.getElementById('new-submitter').value;
-            const email = document.getElementById('new-email').value;
-            const phone = document.getElementById('new-phone').value;
-            const prov = document.getElementById('new-province').value;
-            const link = document.getElementById('new-link').value;
-            
             if(!title) return alert("กรุณากรอกชื่อกิจกรรม");
             
             eventsData.push({
                 id: Date.now().toString(),
                 title_th: title, title_en: title,
                 date: document.getElementById('new-date').value || "2026-03-01",
-                location_th: prov, location_en: prov,
+                location_th: document.getElementById('new-province').value,
+                location_en: document.getElementById('new-province').value,
                 type: document.getElementById('new-type').value,
                 distance: document.getElementById('new-distance').value || 'N/A',
                 image: "https://source.unsplash.com/random/800x600/?running",
                 status: 'pending',
-                submitter: submitter || '-', email: email || '-', phone: phone || '-', link: link || '#'
+                submitter: submitter || '-', email: document.getElementById('new-email').value, phone: document.getElementById('new-phone').value, link: document.getElementById('new-link').value
             });
             
             applyFilters();
