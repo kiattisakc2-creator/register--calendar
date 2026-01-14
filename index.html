@@ -138,12 +138,29 @@
                                 <input type="date" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-date">
                             </div>
                             <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_province">จังหวัด</label>
+                                <select class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-province">
+                                    <option value="กรุงเทพ">กรุงเทพฯ</option>
+                                    <option value="เชียงใหม่">เชียงใหม่</option>
+                                    <option value="ชลบุรี">ชลบุรี</option>
+                                    <option value="ภูเก็ต">ภูเก็ต</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
                                 <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_type">ประเภท</label>
                                 <select class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-type">
                                     <option value="Road">Road</option>
                                     <option value="Trail">Trail</option>
                                     <option value="Triathlon">Triathlon</option>
+                                    <option value="Fun Run">Fun Run</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1" data-i18n="form_dist">ระยะทาง</label>
+                                <input type="text" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-action-500 outline-none" id="new-distance" placeholder="10K, 21K">
                             </div>
                         </div>
                         <div>
@@ -192,7 +209,7 @@
 
         function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
         function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
-        
+
         function changeLanguage(lang) {
             currentLang = lang;
             document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
@@ -204,15 +221,11 @@
             });
             document.getElementById('search-input').placeholder = t('search_ph');
             
-            // Update placeholders inside modal if needed
-            document.getElementById('new-title').placeholder = lang==='th'?"เช่น งานวิ่งมาราธอน...":"e.g. City Marathon...";
-            
             applyFilters(); 
         }
 
         function applyFilters() {
-            const container = document.getElementById('list-content-wrapper');
-            const calGrid = document.getElementById('calendar-grid');
+            const container = document.getElementById('list-view-container');
             const search = document.getElementById('search-input').value.toLowerCase();
             const month = document.getElementById('month-filter').value;
             const typeVal = document.getElementById('type-filter').value;
@@ -306,21 +319,23 @@
         function handleFormSubmit() {
             const title = document.getElementById('new-title').value;
             const submitter = document.getElementById('new-submitter').value;
+            const email = document.getElementById('new-email').value;
+            const phone = document.getElementById('new-phone').value;
+            const prov = document.getElementById('new-province').value;
+            const link = document.getElementById('new-link').value;
+            
             if(!title) return alert("กรุณากรอกชื่อกิจกรรม");
             
-            // Add new event to data
             eventsData.push({
-                id: Date.now(),
+                id: Date.now().toString(),
                 title_th: title, title_en: title,
                 date: document.getElementById('new-date').value || "2026-03-01",
-                location_th: "รอระบุ", location_en: "Pending",
+                location_th: prov, location_en: prov,
                 type: document.getElementById('new-type').value,
+                distance: document.getElementById('new-distance').value || 'N/A',
                 image: "https://source.unsplash.com/random/800x600/?running",
                 status: 'pending',
-                submitter: submitter || 'Guest',
-                email: document.getElementById('new-email').value,
-                phone: document.getElementById('new-phone').value,
-                link: document.getElementById('new-link').value
+                submitter: submitter || '-', email: email || '-', phone: phone || '-', link: link || '#'
             });
             
             applyFilters();
