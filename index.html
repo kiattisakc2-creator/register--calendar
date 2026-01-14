@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action.in.th - ปฏิทินกิจกรรม</title>
+    <title>Action.in.th - Premium Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,68 +11,228 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
-                    colors: { brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' } }
+                    colors: {
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+                        action: { 500: '#10b981', 600: '#059669', 700: '#047857' }
+                    },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
             }
         }
     </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+        .calendar-cell { background-color: white; min-height: 140px; padding: 4px; display: flex; flex-direction: column; transition: background-color 0.2s; position: relative; }
+        .calendar-cell:hover { background-color: #f8fafc; }
+        .event-chip { font-size: 0.7rem; padding: 3px 6px; border-radius: 4px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: filter 0.2s; font-weight: 500; display: flex; align-items: center; gap: 4px; border-left: 3px solid transparent; }
+        .event-chip:hover { filter: brightness(0.95); }
+        .more-btn { font-size: 0.7rem; text-align: center; color: #64748b; font-weight: 600; padding: 2px; border-radius: 4px; cursor: pointer; margin-top: auto; }
+        .container-wide { width: 100%; max-width: 95%; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1600px) { .container-wide { max-width: 1800px; } }
+        /* Modal Animation */
+        .modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .modal.active { opacity: 1; visibility: visible; }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans antialiased flex flex-col min-h-screen">
+<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen relative" onclick="closeLangDropdown(event)">
 
-    <div id="navbar-app"></div>
+    <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="container-wide px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">A</div>
+                    <span class="font-bold text-xl text-slate-800">Action.in.th</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-3">
+                        <a href="index.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium" data-i18n="nav_home">หน้าแรก</a>
+                        <a href="index.html" class="text-brand-600 bg-brand-50 px-3 py-2 text-sm font-medium rounded-lg" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
+                        <button onclick="alert('ฟีเจอร์ฝากกิจกรรม...')" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span data-i18n="btn_submit">ฝากกิจกรรม</span>
+                        </button>
+                        <a href="#" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-50 transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
+                    </div>
 
-    <main class="w-full max-w-[95%] mx-auto px-4 py-8 flex-grow">
-        
-        <div class="flex justify-between items-end mb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">ตารางกิจกรรม</h1>
-                <p class="text-slate-500">เลือกดูรายการงานวิ่งทั้งหมด</p>
+                    <div class="relative pl-2 border-l border-slate-200 md:border-none md:pl-0">
+                        <button onclick="toggleLangDropdown(event)" id="lang-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 transition">
+                            <span class="text-base">🇹🇭</span> TH
+                        </button>
+                        <div id="lang-menu" class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 hidden z-50">
+                            <button onclick="changeLanguage('th')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇹🇭 Thai</button>
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇬🇧 English</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </nav>
 
-        <div id="list-view-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="bg-white border-b border-slate-200">
+        <div class="container-wide px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-6 gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900" data-i18n="header_title">ตารางกิจกรรม</h1>
+                    <p class="mt-2 text-slate-500" data-i18n="header_subtitle">ค้นหางานวิ่งทั่วไทย</p>
+                </div>
+                <div class="bg-slate-100 p-1 rounded-xl flex shadow-inner w-full md:w-auto">
+                    <button onclick="switchView('list')" id="btn-list" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold rounded-lg transition-all shadow-sm bg-white text-slate-800" data-i18n="view_list">รายการ</button>
+                    <button onclick="switchView('calendar')" id="btn-calendar" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 text-sm font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-700" data-i18n="view_calendar">ปฏิทิน</button>
+                </div>
             </div>
 
+            <div class="bg-white p-4 rounded-2xl shadow-soft border border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
+                <div class="sm:col-span-2 lg:col-span-4"><input type="text" id="search-input" placeholder="ค้นหา..." class="block w-full px-4 py-3 rounded-xl bg-slate-50 border-transparent focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none text-sm"></div>
+                <div class="lg:col-span-2"><select id="month-filter" class="block w-full px-4 py-3 rounded-xl bg-slate-50 outline-none text-sm"><option value="">ทุกเดือน</option><option value="1">กุมภาพันธ์</option><option value="2">มีนาคม</option><option value="3">เมษายน</option></select></div>
+                <div class="lg:col-span-2"><select id="province-filter" class="block w-full px-4 py-3 rounded-xl bg-slate-50 outline-none text-sm"><option value="">ทุกจังหวัด</option><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option></select></div>
+                <div class="lg:col-span-2"><select id="type-filter" class="block w-full px-4 py-3 rounded-xl bg-slate-50 outline-none text-sm"><option value="">ทุกประเภท</option><option value="Road">Road</option><option value="Trail">Trail</option></select></div>
+                <div class="sm:col-span-2 lg:col-span-2"><button onclick="applyFilters()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow text-sm" data-i18n="btn_search">ค้นหา</button></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container-wide px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+        <div id="list-view-container" class="relative"><div id="list-content-wrapper" class="space-y-12"></div></div>
+        
+        <div id="calendar-view-container" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h2 id="calendar-month-title" class="text-2xl font-bold text-slate-800"></h2>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-1 overflow-x-auto">
+                <div class="min-w-[800px]">
+                    <div class="grid grid-cols-7 mb-2" id="calendar-header-row"></div>
+                    <div id="calendar-grid" class="calendar-grid"></div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <div id="footer-app"></div>
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto text-center text-slate-400 text-sm">&copy; 2026 Action.in.th</footer>
 
-    <script src="js/data.js"></script>        <script src="js/components.js"></script>  <script>
-        // ส่วนแสดงผลเฉพาะหน้านี้
-        function renderEvents() {
-            const container = document.getElementById('list-view-container');
+    <script src="js/data.js"></script>
+
+    <script>
+        // CONFIG & STATE
+        let currentLang = 'th';
+        let currentView = 'list';
+        
+        // TRANSLATIONS (Simple Version)
+        const trans = {
+            th: { nav_home: "หน้าแรก", nav_calendar: "ปฏิทิน", nav_login: "เข้าสู่ระบบ", btn_submit: "ฝากกิจกรรม", header_title: "ตารางกิจกรรม", header_subtitle: "รวมงานวิ่งทั่วไทย", btn_detail: "ดูรายละเอียด", btn_search: "ค้นหา" },
+            en: { nav_home: "Home", nav_calendar: "Calendar", nav_login: "Login", btn_submit: "Submit Event", header_title: "Event Calendar", header_subtitle: "Running events in Thailand", btn_detail: "Details", btn_search: "Search" }
+        };
+
+        // --- I18N LOGIC ---
+        function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
+        function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
+        
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
+            document.getElementById('lang-menu').classList.add('hidden');
             
-            // ดึงข้อมูลจาก data.js มาแสดง (เอาแค่ 20 งานแรกพอนะครับ เดี๋ยวหน้ายาวเกิน)
-            const eventsToShow = eventsData.slice(0, 20); 
-
-            container.innerHTML = eventsToShow.map(event => `
-                <article class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition flex flex-col h-full">
-                    <div class="h-48 bg-slate-200 relative">
-                        <img src="${event.image}" class="w-full h-full object-cover">
-                        <div class="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold text-slate-700">
-                            ${event.label}
-                        </div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <div class="text-xs font-bold text-brand-600 mb-1">${event.date}</div>
-                        <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-2">${event.title}</h3>
-                        <div class="text-sm text-slate-500 mb-4 flex-grow">
-                            📍 ${event.location} <br>
-                            🏃 ${event.distance}
-                        </div>
-                        
-                        <a href="detail.html?id=${event.id}" class="block w-full text-center bg-brand-600 text-white py-2 rounded-lg hover:bg-brand-700 transition font-medium">
-                            ดูรายละเอียด
-                        </a>
-                    </div>
-                </article>
-            `).join('');
+            // Update Text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(trans[lang][key]) el.innerText = trans[lang][key];
+            });
+            applyFilters(); // Re-render content
         }
 
-        // รอโหลดหน้าเสร็จแล้วค่อยทำงาน
-        document.addEventListener('DOMContentLoaded', () => {
-            renderEvents();
-        });
+        // --- RENDER LOGIC ---
+        function applyFilters() {
+            const container = document.getElementById('list-content-wrapper');
+            const calGrid = document.getElementById('calendar-grid');
+            container.innerHTML = ""; calGrid.innerHTML = "";
+
+            // Simple Filter (You can add full logic back)
+            const filteredData = eventsData; // Assume all data for now
+
+            if(currentView === 'list') {
+                renderListView(filteredData);
+            } else {
+                renderCalendarView(filteredData);
+            }
+        }
+
+        function renderListView(data) {
+            const container = document.getElementById('list-content-wrapper');
+            const titleKey = currentLang === 'th' ? 'title_th' : 'title_en';
+            const locKey = currentLang === 'th' ? 'location_th' : 'location_en';
+            const btnText = trans[currentLang].btn_detail;
+
+            container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">` + 
+            data.slice(0, 30).map(e => `
+                <article class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition">
+                    <div class="h-40 bg-slate-200 relative">
+                        <img src="${e.image}" class="w-full h-full object-cover">
+                        <div class="absolute top-2 right-2 bg-white/90 px-2 py-1 rounded text-xs font-bold">${e.status}</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-xs font-bold text-brand-600 mb-1">${e.date}</div>
+                        <h3 class="text-sm font-bold text-slate-900 mb-2 line-clamp-1">${e[titleKey]}</h3>
+                        <div class="text-xs text-slate-500 mb-3">📍 ${e[locKey]}</div>
+                        <a href="detail.html?id=${e.id}&lang=${currentLang}" class="block w-full text-center bg-slate-50 text-slate-700 text-xs font-bold py-2 rounded-lg hover:bg-brand-50 hover:text-brand-700 transition">${btnText}</a>
+                    </div>
+                </article>
+            `).join('') + `</div>`;
+        }
+
+        function renderCalendarView(data) {
+            // Setup Calendar Headers & Title
+            const headers = currentLang === 'th' 
+                ? ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."] 
+                : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            document.getElementById('calendar-header-row').innerHTML = headers.map(h => `<div class="text-center py-2 font-bold text-sm text-slate-500">${h}</div>`).join('');
+            document.getElementById('calendar-month-title').innerText = currentLang==='th' ? "กุมภาพันธ์ 2569" : "February 2026";
+
+            // Render Cells (Simplified for Feb)
+            const grid = document.getElementById('calendar-grid');
+            const titleKey = currentLang === 'th' ? 'title_th' : 'title_en';
+
+            for(let i=0; i<0; i++) grid.innerHTML += `<div class="bg-slate-50"></div>`; // Skip days (Example)
+            
+            for(let day=1; day<=28; day++) {
+                const dateStr = `2026-02-${String(day).padStart(2,'0')}`;
+                const events = data.filter(e => e.date === dateStr).slice(0, 3);
+                
+                let html = `<div class="calendar-cell group" onclick="window.location.href='detail.html?id=${events[0]?.id}&lang=${currentLang}'">
+                    <div class="text-sm font-bold text-slate-700 mb-1">${day}</div>`;
+                
+                events.forEach(e => {
+                    let color = e.type === 'Trail' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700';
+                    html += `<div class="event-chip ${color}">${e[titleKey]}</div>`;
+                });
+                
+                html += `</div>`;
+                grid.innerHTML += html;
+            }
+        }
+
+        // --- VIEW SWITCHER ---
+        function switchView(view) {
+            currentView = view;
+            const listC = document.getElementById('list-view-container');
+            const calC = document.getElementById('calendar-view-container');
+            const btnList = document.getElementById('btn-list');
+            const btnCal = document.getElementById('btn-calendar');
+
+            if(view === 'list') {
+                listC.classList.remove('hidden'); calC.classList.add('hidden');
+                btnList.className = "flex-1 md:flex-none px-6 py-2 text-sm font-semibold rounded-lg shadow-sm bg-white text-slate-800";
+                btnCal.className = "flex-1 md:flex-none px-6 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700";
+            } else {
+                listC.classList.add('hidden'); calC.classList.remove('hidden');
+                btnList.className = "flex-1 md:flex-none px-6 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700";
+                btnCal.className = "flex-1 md:flex-none px-6 py-2 text-sm font-semibold rounded-lg shadow-sm bg-white text-slate-800";
+            }
+            applyFilters();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', applyFilters);
     </script>
 </body>
 </html>
