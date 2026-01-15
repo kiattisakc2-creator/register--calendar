@@ -30,21 +30,17 @@
             
             <nav class="flex-1 p-4 space-y-2">
                 <div class="text-xs text-slate-500 uppercase tracking-wider mb-2 mt-2">ทั่วไป</div>
-                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">
-                    📊 ภาพรวม
-                </button>
+                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม</button>
 
                 <div class="text-xs text-slate-500 uppercase tracking-wider mb-2 mt-4">งานหน้าบ้าน (Official)</div>
-                <button onclick="switchTab('official')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-official">
-                    🏆 จัดการ Event หน้าบ้าน
+                <button onclick="switchTab('official')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-official">🏆 จัดการ Event</button>
+                <button onclick="switchTab('registrations')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-registrations">
+                    👥 รายชื่อผู้สมัคร <span id="badge-regis" class="ml-auto bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
                 </button>
 
                 <div class="text-xs text-slate-500 uppercase tracking-wider mb-2 mt-4">งานจากทางบ้าน</div>
                 <button onclick="switchTab('requests')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-requests">
                     📩 คำขอฝากงาน <span id="badge-pending" class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
-                </button>
-                <button onclick="switchTab('events')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-events">
-                    📅 ปฏิทินรวม
                 </button>
             </nav>
 
@@ -58,9 +54,13 @@
             
             <div id="view-dashboard" class="content-view">
                 <h2 class="text-2xl font-bold mb-6">ภาพรวมระบบ 📈</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
-                        <div class="text-slate-500 text-sm">งาน Official (หน้าบ้าน)</div>
+                        <div class="text-slate-500 text-sm">ผู้สมัครทั้งหมด</div>
+                        <div class="text-4xl font-bold text-indigo-600 mt-2" id="stat-regis">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
+                        <div class="text-slate-500 text-sm">งาน Official</div>
                         <div class="text-4xl font-bold text-blue-600 mt-2" id="stat-official">0</div>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow border border-slate-200">
@@ -76,120 +76,83 @@
 
             <div id="view-official" class="content-view hidden">
                 <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold">จัดการ Event หน้าบ้าน (Official) 🏆</h2>
-                        <p class="text-slate-500 text-sm">งานเหล่านี้จะแสดงที่หน้าแรก (Home)</p>
-                    </div>
-                    <button onclick="openOfficialModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow-lg flex items-center gap-2">
-                        + เพิ่มงาน Official
-                    </button>
+                    <h2 class="text-2xl font-bold">จัดการ Event หน้าบ้าน (Official) 🏆</h2>
+                    <button onclick="openOfficialModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow flex gap-2">+ เพิ่มงาน</button>
                 </div>
-                
                 <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 border-b">
-                            <tr>
-                                <th class="p-4 text-sm font-bold text-slate-600">ชื่องาน</th>
-                                <th class="p-4 text-sm font-bold text-slate-600">วันที่</th>
-                                <th class="p-4 text-sm font-bold text-slate-600">สถานที่</th>
-                                <th class="p-4 text-sm font-bold text-slate-600 text-center">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-official">
-                            </tbody>
-                    </table>
+                    <table class="w-full text-left"><tbody id="table-official"></tbody></table>
+                </div>
+            </div>
+
+            <div id="view-registrations" class="content-view hidden">
+                
+                <div id="regis-selector">
+                    <h2 class="text-2xl font-bold mb-6">เลือกงานเพื่อดูรายชื่อ 📂</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="regis-event-list">
+                        </div>
+                </div>
+
+                <div id="regis-list" class="hidden">
+                    <div class="flex items-center gap-4 mb-6">
+                        <button onclick="backToSelector()" class="bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg text-sm font-bold">← ย้อนกลับ</button>
+                        <div>
+                            <h2 class="text-2xl font-bold text-blue-800" id="current-event-name">รายชื่อผู้สมัคร</h2>
+                            <p class="text-sm text-slate-500" id="current-event-count">จำนวน 0 คน</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b text-slate-500 uppercase font-bold">
+                                <tr>
+                                    <th class="p-4">BIB Name</th>
+                                    <th class="p-4">ชื่อ-สกุล</th>
+                                    <th class="p-4">เพศ</th>
+                                    <th class="p-4">ระยะ / ไซส์</th>
+                                    <th class="p-4">เบอร์โทร</th>
+                                    <th class="p-4 text-center">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-registrations-detail"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="view-requests" class="content-view hidden">
                 <h2 class="text-2xl font-bold mb-6">คำขอฝากงาน (รออนุมัติ) 📩</h2>
                 <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 border-b">
-                            <tr>
-                                <th class="p-4">วันที่</th>
-                                <th class="p-4">ชื่องาน</th>
-                                <th class="p-4">ผู้ฝาก</th>
-                                <th class="p-4 text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-requests"></tbody>
-                    </table>
+                    <table class="w-full text-left"><tbody id="table-requests"></tbody></table>
                 </div>
             </div>
 
-            <div id="view-events" class="content-view hidden">
-                <h2 class="text-2xl font-bold mb-6">ปฏิทินรวมทั้งหมด 📅</h2>
-                <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left">
-                        <tbody id="table-all"></tbody>
-                    </table>
-                </div>
-            </div>
         </main>
     </div>
 
     <div id="official-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeOfficialModal()"></div>
         <div class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-2xl p-6 overflow-y-auto animate-slide-in">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">เพิ่ม/แก้ไข งาน Official</h3>
-                <button onclick="closeOfficialModal()" class="text-slate-400 hover:text-slate-600">✕</button>
-            </div>
-
+            <h3 class="text-xl font-bold mb-4" id="modal-title">เพิ่ม/แก้ไข งาน Official</h3>
             <form onsubmit="handleOfficialSubmit(event)" class="space-y-4">
                 <input type="hidden" id="off-id">
-                
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">ชื่องาน (TH)</label>
-                    <input type="text" id="off-title" class="w-full border p-2 rounded-lg" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">ชื่องาน (EN)</label>
-                    <input type="text" id="off-title-en" class="w-full border p-2 rounded-lg">
-                </div>
-                
+                <div><label class="block text-sm font-bold mb-1">ชื่องาน (TH)</label><input type="text" id="off-title" class="w-full border p-2 rounded-lg" required></div>
+                <div><label class="block text-sm font-bold mb-1">ชื่องาน (EN)</label><input type="text" id="off-title-en" class="w-full border p-2 rounded-lg"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">วันที่จัด</label>
-                        <input type="date" id="off-date" class="w-full border p-2 rounded-lg" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">จังหวัด</label>
-                        <select id="off-province" class="w-full border p-2 rounded-lg">
-                            <option value="Bangkok">Bangkok</option>
-                            <option value="Chiang Mai">Chiang Mai</option>
-                            <option value="Chonburi">Chonburi</option>
-                            <option value="Phuket">Phuket</option>
-                        </select>
-                    </div>
+                    <div><label class="block text-sm font-bold mb-1">วันที่</label><input type="date" id="off-date" class="w-full border p-2 rounded-lg" required></div>
+                    <div><label class="block text-sm font-bold mb-1">จังหวัด</label><select id="off-province" class="w-full border p-2 rounded-lg"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option><option value="Phuket">Phuket</option></select></div>
                 </div>
-
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">URL รูปโปสเตอร์</label>
-                    <input type="url" id="off-image" class="w-full border p-2 rounded-lg" placeholder="https://...">
-                    <p class="text-xs text-slate-400 mt-1">แนะนำรูปแนวนอน 800x600 px</p>
+                    <label class="block text-sm font-bold mb-1">URL รูปโปสเตอร์</label>
+                    <input type="text" id="off-image" class="w-full border p-2 rounded-lg" placeholder="https://...">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">ระยะทาง (เช่น 10K, 21K)</label>
-                        <input type="text" id="off-distance" class="w-full border p-2 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">ราคาเริ่มต้น</label>
-                        <input type="text" id="off-price" class="w-full border p-2 rounded-lg" placeholder="เช่น 500 - 1,200 บ.">
-                    </div>
+                    <div><label class="block text-sm font-bold mb-1">ระยะทาง</label><input type="text" id="off-distance" class="w-full border p-2 rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">ราคา</label><input type="text" id="off-price" class="w-full border p-2 rounded-lg"></div>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">ลิงก์รับสมัคร / รายละเอียด</label>
-                    <input type="url" id="off-link" class="w-full border p-2 rounded-lg">
-                </div>
-
+                <div><label class="block text-sm font-bold mb-1">ลิงก์/รายละเอียด</label><input type="text" id="off-link" class="w-full border p-2 rounded-lg"></div>
                 <div class="pt-4 flex gap-3 border-t mt-4">
-                    <button type="button" onclick="closeOfficialModal()" class="flex-1 py-3 bg-slate-100 rounded-lg font-bold text-slate-600">ยกเลิก</button>
-                    <button type="submit" class="flex-1 py-3 bg-blue-600 rounded-lg font-bold text-white hover:bg-blue-700 shadow">บันทึกงาน Official</button>
+                    <button type="button" onclick="closeOfficialModal()" class="flex-1 py-3 bg-slate-100 rounded-lg font-bold">ยกเลิก</button>
+                    <button type="submit" class="flex-1 py-3 bg-blue-600 rounded-lg font-bold text-white shadow">บันทึก</button>
                 </div>
             </form>
         </div>
@@ -198,155 +161,171 @@
     <script src="../js/data.js"></script>
     <script>
         const ADMIN_PASS = "1234";
-        let allEvents = [];
+        let allEvents = [], allRegis = [];
 
-        // --- AUTH ---
         function checkAuth() {
             if (sessionStorage.getItem("isAdmin") === "true") {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 fetchData();
-            } else {
-                document.getElementById('login-section').classList.remove('hidden');
-            }
+            } else document.getElementById('login-section').classList.remove('hidden');
         }
-        function handleLogin(e) {
-            e.preventDefault();
-            if (document.getElementById('admin-pass').value === ADMIN_PASS) {
-                sessionStorage.setItem("isAdmin", "true");
-                checkAuth();
-            } else alert("รหัสผิด!");
-        }
+        function handleLogin(e) { e.preventDefault(); if(document.getElementById('admin-pass').value===ADMIN_PASS){sessionStorage.setItem("isAdmin","true");checkAuth();}else alert("รหัสผิด!"); }
         function logout() { sessionStorage.removeItem("isAdmin"); window.location.reload(); }
 
-        // --- DATA ---
         async function fetchData() {
             try {
-                const res = await fetch(API_URL);
-                allEvents = await res.json();
+                const resE = await fetch(API_URL); allEvents = await resE.json();
+                const resR = await fetch(API_URL.replace('/events', '/registrations')); allRegis = await resR.json();
                 renderAll();
             } catch (err) { console.error(err); }
         }
 
         function renderAll() {
-            // แยกข้อมูล
             const officialEvents = allEvents.filter(e => e.is_official === true);
             const userEvents = allEvents.filter(e => !e.is_official);
             const pendingEvents = userEvents.filter(e => e.status === 'pending');
 
-            // 1. Dashboard Stats
+            // Stats
             document.getElementById('stat-official').innerText = officialEvents.length;
             document.getElementById('stat-total').innerText = userEvents.length;
             document.getElementById('stat-pending').innerText = pendingEvents.length;
+            document.getElementById('stat-regis').innerText = allRegis.length;
             
-            // Badge
-            const badge = document.getElementById('badge-pending');
-            badge.innerText = pendingEvents.length;
-            badge.classList.toggle('hidden', pendingEvents.length === 0);
+            // Badges
+            document.getElementById('badge-pending').innerText = pendingEvents.length;
+            document.getElementById('badge-pending').classList.toggle('hidden', pendingEvents.length===0);
+            document.getElementById('badge-regis').innerText = allRegis.length;
+            document.getElementById('badge-regis').classList.toggle('hidden', allRegis.length===0);
 
-            // 2. Table: Official Events
-            const offRows = officialEvents.map(e => `
+            // 1. Table: Official
+            document.getElementById('table-official').innerHTML = officialEvents.map(e => `
                 <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 font-bold text-slate-800 flex items-center gap-3">
-                        <img src="${e.image || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover">
-                        ${e.title_th}
-                    </td>
+                    <td class="p-4 flex items-center gap-3"><img src="${e.image||'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover"><b>${e.title_th}</b></td>
                     <td class="p-4 text-sm">${e.date}</td>
-                    <td class="p-4 text-sm">${e.location_th}</td>
                     <td class="p-4 text-center">
                         <button onclick='editOfficial(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-xs font-bold mr-1">แก้ไข</button>
                         <button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded text-xs font-bold">ลบ</button>
                     </td>
                 </tr>
-            `).join('');
-            document.getElementById('table-official').innerHTML = offRows || `<tr><td colspan="4" class="p-8 text-center text-slate-400">ยังไม่มีงาน Official</td></tr>`;
+            `).join('') || `<tr><td colspan="4" class="p-8 text-center text-slate-400">ยังไม่มีงาน Official</td></tr>`;
 
-            // 3. Table: Requests
+            // 2. Table: Requests
             document.getElementById('table-requests').innerHTML = pendingEvents.map(e => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 text-sm">${e.date}</td>
-                    <td class="p-4 font-bold text-sm">${e.title_th}</td>
-                    <td class="p-4 text-sm text-slate-500">${e.submitter}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-3 py-1 rounded text-xs">อนุมัติ</button>
-                        <button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-3 py-1 rounded text-xs">ลบ</button>
-                    </td>
-                </tr>
-            `).join('') || `<tr><td colspan="4" class="p-8 text-center text-slate-400">ไม่มีคำขอใหม่</td></tr>`;
-
-            // 4. Table: All
-            document.getElementById('table-all').innerHTML = allEvents.map(e => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 text-sm">${e.date}</td>
-                    <td class="p-4 font-bold text-sm text-slate-700">
-                        ${e.is_official ? '<span class="text-blue-600 text-xs border border-blue-200 px-1 rounded mr-1">OFFICIAL</span>' : ''}
-                        ${e.title_th}
-                    </td>
-                    <td class="p-4"><span class="text-xs px-2 py-1 rounded border ${e.status==='open'?'bg-green-50 text-green-700':'bg-yellow-50 text-yellow-700'}">${e.status}</span></td>
-                    <td class="p-4 text-center"><button onclick="deleteEvent('${e._id}')" class="text-red-400 text-sm underline">ลบ</button></td>
-                </tr>
+                <tr class="border-b hover:bg-slate-50"><td class="p-4 text-sm">${e.date}</td><td class="p-4 font-bold text-sm">${e.title_th}</td><td class="p-4 text-sm text-slate-500">${e.submitter}</td><td class="p-4 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-2 py-1 rounded text-xs">ลบ</button></td></tr>
             `).join('');
+
+            // 3. ✅ Event Selector (สร้างการ์ดเลือกงาน)
+            const selectorContainer = document.getElementById('regis-event-list');
+            if (officialEvents.length === 0) {
+                selectorContainer.innerHTML = `<div class="col-span-full text-center text-slate-400">ยังไม่มีงาน Official ให้ดูรายชื่อ</div>`;
+            } else {
+                selectorContainer.innerHTML = officialEvents.map(e => {
+                    // นับจำนวนคนสมัครของงานนี้
+                    const count = allRegis.filter(r => r.eventId === e._id).length;
+                    return `
+                    <div onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="bg-white p-6 rounded-xl shadow border border-slate-200 cursor-pointer hover:border-blue-500 hover:shadow-md transition group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <img src="${e.image || 'https://via.placeholder.com/50'}" class="w-16 h-16 rounded-lg object-cover">
+                            <div>
+                                <h3 class="font-bold text-lg group-hover:text-blue-600">${e.title_th}</h3>
+                                <div class="text-sm text-slate-500">📅 ${e.date}</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-4">
+                            <span class="text-sm font-bold text-slate-600">ผู้สมัคร</span>
+                            <span class="text-xl font-bold ${count>0?'text-blue-600':'text-slate-400'}">${count} คน</span>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
         }
 
-        // --- OFFICIAL MODAL LOGIC ---
+        // --- REGISTRATION VIEW LOGIC ---
+        function viewRegistrations(eventId, eventName) {
+            // กรองเอาเฉพาะคนสมัครงานนี้
+            const filteredRegis = allRegis.filter(r => r.eventId === eventId);
+            
+            document.getElementById('current-event-name').innerText = `รายชื่อ: ${eventName}`;
+            document.getElementById('current-event-count').innerText = `จำนวนทั้งหมด ${filteredRegis.length} คน`;
+
+            const tableBody = document.getElementById('table-registrations-detail');
+            if (filteredRegis.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">ยังไม่มีผู้สมัครในงานนี้</td></tr>`;
+            } else {
+                tableBody.innerHTML = filteredRegis.map(r => `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-4 font-mono font-bold text-slate-600">${r.bibName}</td>
+                        <td class="p-4 font-bold text-slate-800">${r.fullName}</td>
+                        <td class="p-4 text-sm text-slate-500">${r.gender}</td>
+                        <td class="p-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs border">${r.distance}</span> <span class="bg-slate-100 px-2 py-1 rounded text-xs border ml-1">Size ${r.shirtSize}</span></td>
+                        <td class="p-4 text-slate-500 text-sm">${r.phone}</td>
+                        <td class="p-4 text-center"><span class="text-xs font-bold text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">รอชำระเงิน</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            // สลับหน้าจอ
+            document.getElementById('regis-selector').classList.add('hidden');
+            document.getElementById('regis-list').classList.remove('hidden');
+        }
+
+        function backToSelector() {
+            document.getElementById('regis-list').classList.add('hidden');
+            document.getElementById('regis-selector').classList.remove('hidden');
+        }
+
+        // --- OFFICIAL EVENT LOGIC (เหมือนเดิม) ---
         function openOfficialModal() { 
-            // เคลียร์ฟอร์ม
-            document.getElementById('off-id').value = '';
-            document.getElementById('off-title').value = '';
-            document.getElementById('off-image').value = '';
+            document.getElementById('off-id').value = ''; 
+            document.getElementById('modal-title').innerText = "เพิ่มงาน Official";
+            ['off-title','off-title-en','off-date','off-province','off-image','off-distance','off-price','off-link'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('official-modal').classList.remove('hidden'); 
         }
-        function closeOfficialModal() { document.getElementById('official-modal').classList.add('hidden'); }
-        
         function editOfficial(e) {
             document.getElementById('off-id').value = e._id;
+            document.getElementById('modal-title').innerText = "แก้ไขงาน Official";
             document.getElementById('off-title').value = e.title_th;
             document.getElementById('off-title-en').value = e.title_en || '';
             document.getElementById('off-date').value = e.date;
             document.getElementById('off-province').value = e.location_th;
             document.getElementById('off-image').value = e.image || '';
-            document.getElementById('off-distance').value = e.distance || ''; // ใช้ field distance เดิม
-            document.getElementById('off-price').value = e.price || ''; // เพิ่ม field ใหม่ (ถ้า DB รับ)
+            document.getElementById('off-distance').value = e.distance || '';
+            document.getElementById('off-price').value = e.price || '';
             document.getElementById('off-link').value = e.link || '';
             document.getElementById('official-modal').classList.remove('hidden');
         }
-
+        function closeOfficialModal() { document.getElementById('official-modal').classList.add('hidden'); }
         async function handleOfficialSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('off-id').value;
             const data = {
                 title_th: document.getElementById('off-title').value,
-                title_en: document.getElementById('off-title-en').value || document.getElementById('off-title').value,
+                title_en: document.getElementById('off-title-en').value,
                 date: document.getElementById('off-date').value,
                 location_th: document.getElementById('off-province').value,
                 image: document.getElementById('off-image').value,
                 distance: document.getElementById('off-distance').value,
-                price: document.getElementById('off-price').value, // DB ต้องรองรับ (NestJS ยืดหยุ่นน่าจะรับได้เลย)
+                price: document.getElementById('off-price').value,
                 link: document.getElementById('off-link').value,
-                is_official: true, // 🟢 ติดป้ายว่าเป็นงาน Official
-                status: 'open'
+                is_official: true, status: 'open'
             };
-
             const url = id ? `${API_URL}/${id}` : API_URL;
             const method = id ? 'PATCH' : 'POST';
-
-            try {
-                await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-                closeOfficialModal();
-                fetchData();
-                alert('บันทึกเรียบร้อย!');
-            } catch(err) { alert('Error'); }
+            try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('Success!'); } catch(err) { alert('Error'); }
         }
 
-        // --- NAVIGATION & ACTIONS ---
+        // NAV & ACTIONS
         function switchTab(tab) {
             document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-slate-800', 'text-white'));
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             document.getElementById(`btn-${tab}`).classList.add('bg-slate-800', 'text-white');
+            if(tab === 'registrations') backToSelector(); // รีเซ็ตหน้าเลือกงานเสมอ
         }
-        async function updateStatus(id, st) { if(confirm('ยืนยัน?')) { await fetch(`${API_URL}/${id}`, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})}); fetchData(); } }
-        async function deleteEvent(id) { if(confirm('ลบถาวร?')) { await fetch(`${API_URL}/${id}`, {method:'DELETE'}); fetchData(); } }
+        async function updateStatus(id,st){if(confirm('ยืนยัน?')){await fetch(`${API_URL}/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})});fetchData();}}
+        async function deleteEvent(id){if(confirm('ลบ?')){await fetch(`${API_URL}/${id}`,{method:'DELETE'});fetchData();}}
 
         checkAuth();
         switchTab('dashboard');
