@@ -10,12 +10,10 @@
         body { font-family: 'Prompt', sans-serif; }
         .animate-slide-up { animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 h-screen overflow-hidden flex flex-col">
@@ -38,7 +36,7 @@
                 <p class="text-xs text-slate-400 mt-1">Backend Manager</p>
             </div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม</button>
+                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม & รายได้</button>
                 <button onclick="switchTab('official')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-official">🏆 จัดการ Event</button>
                 <button onclick="switchTab('registrations')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-registrations">👥 รายชื่อผู้สมัคร</button>
                 <button onclick="switchTab('requests')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-requests">📩 คำขอฝากงาน</button>
@@ -50,13 +48,52 @@
         </aside>
 
         <main class="flex-1 overflow-y-auto p-8 relative bg-slate-100">
+            
             <div id="view-dashboard" class="content-view">
-                <h2 class="text-2xl font-bold mb-6">ภาพรวมระบบ 📈</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">ผู้สมัครทั้งหมด</div><div class="text-4xl font-bold text-indigo-600 mt-2" id="stat-regis">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">งาน Official</div><div class="text-4xl font-bold text-blue-600 mt-2" id="stat-official">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">งานฝาก (Calendar)</div><div class="text-4xl font-bold text-slate-700 mt-2" id="stat-total">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">รอตรวจสอบ</div><div class="text-4xl font-bold text-yellow-500 mt-2" id="stat-pending">0</div></div>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">ภาพรวมระบบ (Dashboard) 📈</h2>
+                        <p class="text-sm text-slate-500">สรุปยอดผู้สมัครและรายได้ทั้งหมด</p>
+                    </div>
+                    <button onclick="fetchData()" class="text-sm text-blue-600 hover:underline">🔄 Refresh Data</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-green-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><svg class="w-24 h-24 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg></div>
+                        <div class="text-slate-500 text-sm font-bold uppercase tracking-wider">💰 รายได้รวม (Total Revenue)</div>
+                        <div class="text-4xl font-bold text-green-600 mt-2" id="stat-revenue">0 ฿</div>
+                        <div class="text-xs text-green-500 mt-1">ยอดจองสะสมทั้งหมด</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><svg class="w-24 h-24 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path></svg></div>
+                        <div class="text-slate-500 text-sm font-bold uppercase tracking-wider">🏃 ผู้สมัครรวม (Runners)</div>
+                        <div class="text-4xl font-bold text-blue-600 mt-2" id="stat-runners">0</div>
+                        <div class="text-xs text-blue-500 mt-1">คน (Pax)</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm font-bold uppercase tracking-wider">🏆 งานที่เปิดรับสมัคร</div>
+                        <div class="text-4xl font-bold text-slate-700 mt-2" id="stat-events">0</div>
+                        <div class="text-xs text-slate-400 mt-1">งาน Official</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="font-bold text-lg text-slate-800">สรุปรายได้แยกตามงาน (Event Performance)</h3>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-slate-500 text-sm uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-5">ชื่องานวิ่ง (Event Name)</th>
+                                <th class="p-5 text-center">จำนวน (Pax)</th>
+                                <th class="p-5 text-right">รายได้ (Income)</th>
+                                <th class="p-5 text-center">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-dashboard" class="divide-y divide-slate-100 text-sm">
+                            </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -107,33 +144,22 @@
     </div>
 
     <div id="official-modal" class="fixed inset-0 z-50 hidden bg-white animate-slide-up flex flex-col">
-        
         <div class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between shadow-sm shrink-0 z-10">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold text-xl">E</div>
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800" id="modal-title">จัดการ Event Official</h3>
-                    <p class="text-xs text-slate-500">เพิ่มรายละเอียดงานของคุณให้ครบถ้วน</p>
-                </div>
+                <div><h3 class="text-xl font-bold text-slate-800" id="modal-title">จัดการ Event Official</h3><p class="text-xs text-slate-500">เพิ่มรายละเอียดงานของคุณให้ครบถ้วน</p></div>
             </div>
             <div class="flex gap-3">
-                <button type="button" onclick="closeOfficialModal()" class="px-6 py-2.5 rounded-lg font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition">ยกเลิก / ปิด</button>
-                <button onclick="document.getElementById('save-btn').click()" class="px-8 py-2.5 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30 transition flex items-center gap-2">
-                    <span>💾 บันทึกข้อมูล</span>
-                </button>
+                <button type="button" onclick="closeOfficialModal()" class="px-6 py-2.5 rounded-lg font-bold text-slate-500 bg-slate-100 hover:bg-slate-200">ยกเลิก</button>
+                <button onclick="document.getElementById('save-btn').click()" class="px-8 py-2.5 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg">💾 บันทึกข้อมูล</button>
             </div>
         </div>
-
         <div class="flex-1 overflow-y-auto bg-slate-50 p-8">
             <form onsubmit="handleOfficialSubmit(event)" class="max-w-7xl mx-auto space-y-8 pb-20">
-                <input type="hidden" id="off-id">
-                <button type="submit" id="save-btn" class="hidden"></button>
-
+                <input type="hidden" id="off-id"><button type="submit" id="save-btn" class="hidden"></button>
+                
                 <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <h4 class="font-bold text-xl mb-6 text-slate-800 border-b pb-4 flex items-center gap-2">
-                        <span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">1</span>
-                        ข้อมูลทั่วไป (Basic Info)
-                    </h4>
+                    <h4 class="font-bold text-xl mb-6 text-slate-800 border-b pb-4 flex items-center gap-2"><span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">1</span> ข้อมูลทั่วไป (Basic Info)</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
                             <div><label class="block text-sm font-bold mb-1 text-slate-600">ชื่องาน (TH)</label><input type="text" id="off-title" class="w-full border p-3 rounded-lg text-lg font-bold" required></div>
@@ -147,10 +173,7 @@
                             <div>
                                 <label class="block text-sm font-bold mb-1 text-slate-600">URL รูปโปสเตอร์</label>
                                 <input type="text" id="off-image" class="w-full border p-3 rounded-lg mb-2" onchange="document.getElementById('preview-img').src = this.value">
-                                <div class="h-40 bg-slate-100 rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden relative">
-                                    <span class="text-slate-400 text-sm absolute z-0">Preview Image</span>
-                                    <img id="preview-img" src="" class="w-full h-full object-cover relative z-10" onerror="this.style.display='none'" onload="this.style.display='block'">
-                                </div>
+                                <div class="h-40 bg-slate-100 rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden relative"><span class="text-slate-400 text-sm absolute z-0">Preview Image</span><img id="preview-img" src="" class="w-full h-full object-cover relative z-10" onerror="this.style.display='none'" onload="this.style.display='block'"></div>
                             </div>
                             <div><label class="block text-sm font-bold mb-1 text-slate-600">ลิงก์รายละเอียดเพิ่มเติม</label><input type="text" id="off-link" class="w-full border p-3 rounded-lg"></div>
                         </div>
@@ -158,34 +181,14 @@
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
-                        <h4 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                            <span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">2</span>
-                            จัดการตั๋ว (Tickets)
-                        </h4>
-                        <button type="button" onclick="addTicketRow()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">
-                            <span class="text-xl leading-none">+</span> เพิ่มบัตรใหม่
-                        </button>
-                    </div>
-                    <div id="ticket-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        </div>
+                    <div class="flex justify-between items-center mb-6 border-b pb-4"><h4 class="font-bold text-xl text-slate-800 flex items-center gap-2"><span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">2</span> จัดการตั๋ว (Tickets)</h4><button type="button" onclick="addTicketRow()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow">+ เพิ่มบัตรใหม่</button></div>
+                    <div id="ticket-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
-                        <h4 class="font-bold text-xl text-slate-800 flex items-center gap-2">
-                            <span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">3</span>
-                            ข้อมูลเพิ่มเติม (Custom Fields)
-                        </h4>
-                        <button type="button" onclick="addCustomRow()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">
-                            <span class="text-xl leading-none">+</span> เพิ่มหัวข้อ
-                        </button>
-                    </div>
-                    <div id="custom-container" class="space-y-4">
-                        </div>
-                    <p class="text-sm text-slate-400 mt-4 text-center">สามารถเพิ่มข้อมูลอื่นๆ ได้ เช่น "สิ่งที่ได้รับ", "กติกาการแข่งขัน", "กำหนดการ" เป็นต้น</p>
+                    <div class="flex justify-between items-center mb-6 border-b pb-4"><h4 class="font-bold text-xl text-slate-800 flex items-center gap-2"><span class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm">3</span> ข้อมูลเพิ่มเติม (Custom Fields)</h4><button type="button" onclick="addCustomRow()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg text-sm font-bold shadow">+ เพิ่มหัวข้อ</button></div>
+                    <div id="custom-container" class="space-y-4"></div>
                 </div>
-
             </form>
         </div>
     </div>
@@ -213,57 +216,61 @@
             } catch (err) { console.error(err); }
         }
 
+        // --- DASHBOARD CALCULATIONS (NEW!) ---
         function renderAll() {
             const officialEvents = allEvents.filter(e => e.is_official);
             const userEvents = allEvents.filter(e => !e.is_official);
             const pendingEvents = userEvents.filter(e => e.status === 'pending');
 
-            document.getElementById('stat-official').innerText = officialEvents.length;
-            document.getElementById('stat-total').innerText = userEvents.length;
-            document.getElementById('stat-pending').innerText = pendingEvents.length;
-            document.getElementById('stat-regis').innerText = allRegis.length;
+            // 1. Calculate Stats
+            let totalRevenue = 0;
+            let totalRunners = allRegis.length;
 
-            document.getElementById('table-official').innerHTML = officialEvents.map(e => `
+            // 2. Generate Dashboard Table & Revenue
+            const dashboardRows = officialEvents.map(e => {
+                const eventRegis = allRegis.filter(r => r.eventId === e._id);
+                const pax = eventRegis.length;
+                const income = eventRegis.reduce((sum, r) => sum + (Number(r.price) || 0), 0);
+                totalRevenue += income;
+
+                return `
                 <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 flex items-center gap-3"><img src="${e.image||'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-lg object-cover bg-slate-200"><div><div class="font-bold text-slate-800">${e.title_th}</div><div class="text-xs text-slate-500">${e.location_th}</div></div></td>
-                    <td class="p-4 text-sm text-slate-600">${e.date}</td>
-                    <td class="p-4 text-center">
-                        <button onclick='editOfficial(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-blue-50 text-blue-600 px-3 py-1 rounded text-xs font-bold mr-2 hover:bg-blue-100">แก้ไข</button>
-                        <button onclick="deleteEvent('${e._id}')" class="bg-red-50 text-red-600 px-3 py-1 rounded text-xs font-bold hover:bg-red-100">ลบ</button>
-                    </td>
-                </tr>`).join('') || '<tr><td colspan="4" class="p-8 text-center text-slate-400">ไม่มีข้อมูล</td></tr>';
+                    <td class="p-5 font-bold text-slate-700">${e.title_th}</td>
+                    <td class="p-5 text-center"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">${pax} คน</span></td>
+                    <td class="p-5 text-right font-mono font-bold text-green-600">${income.toLocaleString()} ฿</td>
+                    <td class="p-5 text-center text-xs text-slate-400">Open</td>
+                </tr>
+                `;
+            }).join('');
 
-            document.getElementById('table-requests').innerHTML = pendingEvents.map(e => `
-                <tr class="border-b hover:bg-slate-50"><td class="p-4 text-sm">${e.date}</td><td class="p-4 font-bold text-slate-700">${e.title_th}</td><td class="p-4 text-sm text-slate-500">${e.submitter}</td><td class="p-4 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-2 py-1 rounded text-xs">ลบ</button></td></tr>`).join('');
+            // Update UI
+            document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString() + ' ฿';
+            document.getElementById('stat-runners').innerText = totalRunners.toLocaleString();
+            document.getElementById('stat-events').innerText = officialEvents.length;
+            
+            document.getElementById('table-dashboard').innerHTML = dashboardRows || '<tr><td colspan="4" class="p-8 text-center text-slate-400">ยังไม่มีข้อมูล</td></tr>';
+
+            // Update other tables
+            document.getElementById('table-official').innerHTML = officialEvents.map(e => `<tr class="border-b hover:bg-slate-50"><td class="p-4 flex items-center gap-3"><img src="${e.image||'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-lg object-cover bg-slate-200"><div><div class="font-bold text-slate-800">${e.title_th}</div><div class="text-xs text-slate-500">${e.location_th}</div></div></td><td class="p-4 text-sm text-slate-600">${e.date}</td><td class="p-4 text-center"><button onclick='editOfficial(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-blue-50 text-blue-600 px-3 py-1 rounded text-xs font-bold mr-2">แก้ไข</button><button onclick="deleteEvent('${e._id}')" class="bg-red-50 text-red-600 px-3 py-1 rounded text-xs font-bold">ลบ</button></td></tr>`).join('');
+            document.getElementById('table-requests').innerHTML = pendingEvents.map(e => `<tr class="border-b hover:bg-slate-50"><td class="p-4 text-sm">${e.date}</td><td class="p-4 font-bold text-slate-700">${e.title_th}</td><td class="p-4 text-sm text-slate-500">${e.submitter}</td><td class="p-4 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-2 py-1 rounded text-xs">ลบ</button></td></tr>`).join('');
 
             renderEventSelector();
         }
 
-        // --- TICKET MANAGER ---
+        // --- TICKET & CUSTOM FIELD MANAGERS ---
         function addTicketRow(data = {}) {
             const container = document.getElementById('ticket-container');
             const div = document.createElement('div');
-            div.className = "bg-white p-4 rounded-xl border border-slate-300 ticket-row shadow-sm relative hover:border-blue-400 transition animate-slide-up flex flex-col gap-3";
+            div.className = "bg-white p-4 rounded-xl border border-slate-300 ticket-row shadow-sm relative flex flex-col gap-3 animate-slide-up";
             div.innerHTML = `
                 <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 font-bold text-xl px-2">×</button>
                 <div class="font-bold text-slate-400 text-xs uppercase tracking-wide mb-1">Ticket Info</div>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" class="t-name w-full border p-2 rounded bg-slate-50 font-bold" value="${data.name || ''}" placeholder="ชื่อบัตร (เช่น 10K)">
-                    <input type="number" class="t-price w-full border p-2 rounded bg-slate-50" value="${data.price || ''}" placeholder="ราคาปกติ">
-                </div>
-                <div class="bg-yellow-50 p-2 rounded border border-yellow-200 space-y-1">
-                    <div class="text-[10px] font-bold text-yellow-700">Early Bird</div>
-                    <div class="flex gap-2"><input type="number" class="t-eb-price w-full border p-1 text-xs rounded" value="${data.earlyBirdPrice || ''}" placeholder="ราคา"><input type="date" class="t-eb-date w-full border p-1 text-xs rounded" value="${data.earlyBirdDate || ''}"></div>
-                </div>
-                <div class="bg-red-50 p-2 rounded border border-red-200 space-y-1">
-                    <div class="text-[10px] font-bold text-red-700">Super Early</div>
-                    <div class="flex gap-2"><input type="number" class="t-seb-price w-full border p-1 text-xs rounded" value="${data.superEarlyBirdPrice || ''}" placeholder="ราคา"><input type="date" class="t-seb-date w-full border p-1 text-xs rounded" value="${data.superEarlyBirdDate || ''}"></div>
-                </div>
-            `;
+                <div class="grid grid-cols-2 gap-3"><input type="text" class="t-name w-full border p-2 rounded bg-slate-50 font-bold" value="${data.name || ''}" placeholder="ชื่อบัตร (เช่น 10K)"><input type="number" class="t-price w-full border p-2 rounded bg-slate-50" value="${data.price || ''}" placeholder="ราคาปกติ"></div>
+                <div class="bg-yellow-50 p-2 rounded border border-yellow-200 space-y-1"><div class="text-[10px] font-bold text-yellow-700">Early Bird</div><div class="flex gap-2"><input type="number" class="t-eb-price w-full border p-1 text-xs rounded" value="${data.earlyBirdPrice || ''}" placeholder="ราคา"><input type="date" class="t-eb-date w-full border p-1 text-xs rounded" value="${data.earlyBirdDate || ''}"></div></div>
+                <div class="bg-red-50 p-2 rounded border border-red-200 space-y-1"><div class="text-[10px] font-bold text-red-700">Super Early</div><div class="flex gap-2"><input type="number" class="t-seb-price w-full border p-1 text-xs rounded" value="${data.superEarlyBirdPrice || ''}" placeholder="ราคา"><input type="date" class="t-seb-date w-full border p-1 text-xs rounded" value="${data.superEarlyBirdDate || ''}"></div></div>`;
             container.appendChild(div);
         }
 
-        // --- CUSTOM DATA MANAGER (NEW!) ---
         function addCustomRow(data = {}) {
             const container = document.getElementById('custom-container');
             const div = document.createElement('div');
@@ -273,8 +280,7 @@
                     <input type="text" class="c-title w-full border p-2 rounded font-bold text-slate-700 placeholder-slate-400" value="${data.title || ''}" placeholder="หัวข้อ (เช่น สิ่งที่ได้รับ)">
                     <textarea class="c-detail w-full border p-2 rounded text-slate-600 h-20 placeholder-slate-300" placeholder="รายละเอียด...">${data.detail || ''}</textarea>
                 </div>
-                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 p-2 mt-1 rounded bg-red-50 hover:bg-red-100">ลบ</button>
-            `;
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 p-2 mt-1 rounded bg-red-50 hover:bg-red-100">ลบ</button>`;
             container.appendChild(div);
         }
 
@@ -284,13 +290,8 @@
             document.getElementById('modal-title').innerText = "สร้างงานใหม่ (New Event)";
             ['off-title','off-title-en','off-date','off-province','off-image','off-link'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('preview-img').src = '';
-            
-            // Clear & Add Defaults
-            document.getElementById('ticket-container').innerHTML = '';
-            addTicketRow();
-            document.getElementById('custom-container').innerHTML = '';
-            addCustomRow({title: 'สิ่งที่ได้รับ (Race Pack)', detail: '- เสื้อที่ระลึก\n- เหรียญรางวัล\n- BIB'});
-            
+            document.getElementById('ticket-container').innerHTML = ''; addTicketRow();
+            document.getElementById('custom-container').innerHTML = ''; addCustomRow({title: 'สิ่งที่ได้รับ (Race Pack)', detail: '- เสื้อที่ระลึก\n- เหรียญรางวัล\n- BIB'});
             document.getElementById('official-modal').classList.remove('hidden'); 
         }
 
@@ -305,11 +306,9 @@
             document.getElementById('preview-img').src = e.image || '';
             document.getElementById('off-link').value = e.link || '';
             
-            // Tickets
             document.getElementById('ticket-container').innerHTML = '';
             if (e.tickets?.length) e.tickets.forEach(t => addTicketRow(t)); else addTicketRow();
 
-            // Custom Data
             document.getElementById('custom-container').innerHTML = '';
             if (e.customData?.length) e.customData.forEach(c => addCustomRow(c)); else addCustomRow();
 
@@ -320,8 +319,6 @@
 
         async function handleOfficialSubmit(e) {
             e.preventDefault();
-            
-            // Collect Tickets
             const tickets = [];
             document.querySelectorAll('.ticket-row').forEach(row => {
                 const name = row.querySelector('.t-name').value;
@@ -337,7 +334,6 @@
                 }
             });
 
-            // Collect Custom Data
             const customData = [];
             document.querySelectorAll('.custom-row').forEach(row => {
                 const title = row.querySelector('.c-title').value;
@@ -354,13 +350,13 @@
                 image: document.getElementById('off-image').value,
                 link: document.getElementById('off-link').value,
                 tickets: tickets,
-                customData: customData, // ส่งข้อมูลใหม่ไปด้วย
+                customData: customData,
                 is_official: true, status: 'open'
             };
             
             const url = id ? `${API_URL}/${id}` : API_URL;
             const method = id ? 'PATCH' : 'POST';
-            try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('บันทึกสำเร็จ!'); } catch(err) { alert('Error saving event'); }
+            try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('บันทึกสำเร็จ!'); } catch(err) { alert('Error'); }
         }
 
         function renderEventSelector() {
@@ -368,7 +364,6 @@
             list.sort((a, b) => new Date(b.date) - new Date(a.date));
             const keyword = document.getElementById('search-event').value.toLowerCase();
             if (keyword) list = list.filter(e => e.title_th.toLowerCase().includes(keyword));
-
             document.getElementById('regis-event-list').innerHTML = list.map((e, index) => {
                 const count = allRegis.filter(r => r.eventId === e._id).length;
                 return `<tr onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="hover:bg-blue-50 cursor-pointer border-b last:border-0"><td class="p-4 text-center font-mono text-slate-400">${list.length - index}</td><td class="p-4 font-bold text-slate-700">${e.title_th}</td><td class="p-4 text-slate-500">${e.date}</td><td class="p-4 text-center font-bold text-blue-600 bg-blue-50/50 rounded-lg">${count}</td><td class="p-4 text-right"><button class="text-sm font-bold text-slate-400">View</button></td></tr>`;
@@ -379,8 +374,7 @@
             const filtered = allRegis.filter(r => r.eventId === id);
             document.getElementById('current-event-name').innerText = `รายชื่อ: ${name}`;
             document.getElementById('current-event-count').innerText = `จำนวน ${filtered.length} คน`;
-            document.getElementById('table-registrations-detail').innerHTML = filtered.map(r => `
-                <tr class="border-b hover:bg-slate-50"><td class="p-4 font-mono font-bold text-slate-600">${r.bibName}</td><td class="p-4 font-bold">${r.fullName}</td><td class="p-4 text-sm">${r.gender}</td><td class="p-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs border border-slate-300 font-medium">${r.distance} / ${r.shirtSize}</span></td><td class="p-4 text-sm text-slate-500">${r.phone}</td><td class="p-4 text-center"><span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-bold">Pending</span></td></tr>`).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-400">ยังไม่มีผู้สมัคร</td></tr>';
+            document.getElementById('table-registrations-detail').innerHTML = filtered.map(r => `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-mono font-bold text-slate-600">${r.bibName}</td><td class="p-4 font-bold">${r.fullName}</td><td class="p-4 text-sm">${r.gender}</td><td class="p-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs border border-slate-300 font-medium">${r.distance} / ${r.shirtSize}</span></td><td class="p-4 text-sm text-slate-500">${r.phone}</td><td class="p-4 text-center"><span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-bold">Pending</span></td></tr>`).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-400">ยังไม่มีผู้สมัคร</td></tr>';
             document.getElementById('regis-selector').classList.add('hidden');
             document.getElementById('regis-list').classList.remove('hidden');
         }
