@@ -97,4 +97,57 @@
                             <h3 class="font-bold text-lg text-slate-800 mb-2">${e.title_th}</h3>
                             <div class="text-sm text-slate-500 flex items-center gap-1">
                                 📍 ${e.location_th || 'ไม่ระบุ'} 
-                                <span class="text-xs bg-slate-1
+                                <span class="text-xs bg-slate-100 px-2 rounded ml-auto">โดย ${e.submitter || 'สมาชิก'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-red-400">เชื่อมต่อ Server ไม่ได้</div>`;
+            }
+        }
+
+        // --- 2. ฟังก์ชัน Modal ---
+        function openSubmitModal() { document.getElementById('submit-modal').classList.remove('hidden'); }
+        function closeSubmitModal() { document.getElementById('submit-modal').classList.add('hidden'); }
+
+        // --- 3. ฟังก์ชันส่งข้อมูลไป Backend ---
+        async function handleFormSubmit() {
+            const title = document.getElementById('new-title').value;
+            const date = document.getElementById('new-date').value;
+            
+            if(!title || !date) return alert("กรุณากรอกชื่อและวันที่");
+
+            const newEvent = {
+                title_th: title,
+                title_en: title,
+                date: date,
+                location_th: document.getElementById('new-province').value,
+                submitter: document.getElementById('new-submitter').value,
+                status: 'pending' // ฝากแล้วต้องรออนุมัติ (หรือจะเป็น open เลยก็ได้)
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newEvent)
+                });
+
+                if(res.ok) {
+                    alert('ฝากกิจกรรมเรียบร้อย!');
+                    closeSubmitModal();
+                    loadCalendarEvents(); // โหลดข้อมูลใหม่ทันที
+                }
+            } catch(e) {
+                alert('Error connecting to server');
+            }
+        }
+
+        // เริ่มโหลดข้อมูลเมื่อเปิดเว็บ
+        loadCalendarEvents();
+    </script>
+</body>
+</html>
