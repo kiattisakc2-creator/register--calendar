@@ -27,7 +27,6 @@
                 <h1 class="text-2xl font-bold text-blue-400">Action Admin</h1>
                 <p class="text-xs text-slate-400 mt-1">Backend Manager</p>
             </div>
-            
             <nav class="flex-1 p-4 space-y-2">
                 <div class="text-xs text-slate-500 uppercase tracking-wider mb-2 mt-2">ทั่วไป</div>
                 <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม</button>
@@ -43,7 +42,6 @@
                     📩 คำขอฝากงาน <span id="badge-pending" class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
                 </button>
             </nav>
-
             <div class="p-4 border-t border-slate-700">
                 <a href="../index.html" target="_blank" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4 pl-2">🔗 เปิดหน้าเว็บจริง</a>
                 <button onclick="logout()" class="w-full bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-2 rounded-lg text-sm font-bold transition">Logout</button>
@@ -87,24 +85,30 @@
             <div id="view-registrations" class="content-view hidden">
                 
                 <div id="regis-selector">
-    <h2 class="text-2xl font-bold mb-6">เลือกงานเพื่อดูรายชื่อ 📂</h2>
-    
-    <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 border-b text-slate-500 uppercase font-bold">
-                <tr>
-                    <th class="p-4 pl-6">ชื่องานวิ่ง</th>
-                    <th class="p-4">วันที่จัดงาน</th>
-                    <th class="p-4 text-center">ยอดผู้สมัคร</th>
-                    <th class="p-4 text-right pr-6">จัดการ</th>
-                </tr>
-            </thead>
-            <tbody id="regis-event-list" class="divide-y divide-slate-100">
-                </tbody>
-        </table>
-    </div>
-</div>
-        </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">เลือกงานเพื่อดูรายชื่อ 📂</h2>
+                        
+                        <div class="relative">
+                            <input type="text" id="search-event" onkeyup="renderEventSelector()" placeholder="🔍 ค้นหาชื่องาน..." class="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none w-64">
+                            <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b text-slate-500 uppercase font-bold">
+                                <tr>
+                                    <th class="p-4 w-20 text-center text-slate-400">#</th>
+                                    <th class="p-4 pl-0">ชื่องานวิ่ง</th>
+                                    <th class="p-4">วันที่จัดงาน</th>
+                                    <th class="p-4 text-center">ยอดผู้สมัคร</th>
+                                    <th class="p-4 text-right pr-6">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regis-event-list" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div id="regis-list" class="hidden">
                     <div class="flex items-center gap-4 mb-6">
@@ -114,7 +118,6 @@
                             <p class="text-sm text-slate-500" id="current-event-count">จำนวน 0 คน</p>
                         </div>
                     </div>
-                    
                     <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 border-b text-slate-500 uppercase font-bold">
@@ -155,10 +158,7 @@
                     <div><label class="block text-sm font-bold mb-1">วันที่</label><input type="date" id="off-date" class="w-full border p-2 rounded-lg" required></div>
                     <div><label class="block text-sm font-bold mb-1">จังหวัด</label><select id="off-province" class="w-full border p-2 rounded-lg"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option><option value="Phuket">Phuket</option></select></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">URL รูปโปสเตอร์</label>
-                    <input type="text" id="off-image" class="w-full border p-2 rounded-lg" placeholder="https://...">
-                </div>
+                <div><label class="block text-sm font-bold mb-1">URL รูปโปสเตอร์</label><input type="text" id="off-image" class="w-full border p-2 rounded-lg" placeholder="https://..."></div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-sm font-bold mb-1">ระยะทาง</label><input type="text" id="off-distance" class="w-full border p-2 rounded-lg"></div>
                     <div><label class="block text-sm font-bold mb-1">ราคา</label><input type="text" id="off-price" class="w-full border p-2 rounded-lg"></div>
@@ -177,6 +177,7 @@
         const ADMIN_PASS = "1234";
         let allEvents = [], allRegis = [];
 
+        // --- AUTH ---
         function checkAuth() {
             if (sessionStorage.getItem("isAdmin") === "true") {
                 document.getElementById('login-section').classList.add('hidden');
@@ -187,6 +188,7 @@
         function handleLogin(e) { e.preventDefault(); if(document.getElementById('admin-pass').value===ADMIN_PASS){sessionStorage.setItem("isAdmin","true");checkAuth();}else alert("รหัสผิด!"); }
         function logout() { sessionStorage.removeItem("isAdmin"); window.location.reload(); }
 
+        // --- DATA ---
         async function fetchData() {
             try {
                 const resE = await fetch(API_URL); allEvents = await resE.json();
@@ -212,7 +214,7 @@
             document.getElementById('badge-regis').innerText = allRegis.length;
             document.getElementById('badge-regis').classList.toggle('hidden', allRegis.length===0);
 
-            // 1. Table: Official
+            // Table 1: Official Events (Edit/Delete)
             document.getElementById('table-official').innerHTML = officialEvents.map(e => `
                 <tr class="border-b hover:bg-slate-50">
                     <td class="p-4 flex items-center gap-3"><img src="${e.image||'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover"><b>${e.title_th}</b></td>
@@ -224,56 +226,76 @@
                 </tr>
             `).join('') || `<tr><td colspan="4" class="p-8 text-center text-slate-400">ยังไม่มีงาน Official</td></tr>`;
 
-            // 2. Table: Requests
+            // Table 2: Requests
             document.getElementById('table-requests').innerHTML = pendingEvents.map(e => `
                 <tr class="border-b hover:bg-slate-50"><td class="p-4 text-sm">${e.date}</td><td class="p-4 font-bold text-sm">${e.title_th}</td><td class="p-4 text-sm text-slate-500">${e.submitter}</td><td class="p-4 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-2 py-1 rounded text-xs">ลบ</button></td></tr>
             `).join('');
 
-            // 3. ✅ Event Selector (แบบตาราง - รองรับงานเยอะ)
-            const selectorContainer = document.getElementById('regis-event-list');
-            
-            if (officialEvents.length === 0) {
-                // ถ้าไม่มีงาน ให้แสดงแถวว่างๆ
-                selectorContainer.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400">ยังไม่มีงาน Official ให้ดูรายชื่อ</td></tr>`;
-            } else {
-                selectorContainer.innerHTML = officialEvents.map(e => {
-                    // นับยอดผู้สมัคร
-                    const count = allRegis.filter(r => r.eventId === e._id).length;
-                    
-                    // ✅ สร้างเป็นแถวตาราง (tr) แทนการ์ด (div)
-                    return `
-                    <tr onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="hover:bg-blue-50 cursor-pointer transition group border-b border-slate-100 last:border-0">
-                        <td class="p-4 pl-6">
-                            <div class="flex items-center gap-3">
-                                <img src="${e.image || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover border border-slate-200">
-                                <div>
-                                    <div class="font-bold text-slate-800 group-hover:text-blue-700">${e.title_th}</div>
-                                    <div class="text-xs text-slate-400">${e.location_th}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-4 text-slate-600">${e.date}</td>
-                        <td class="p-4 text-center">
-                            <span class="px-3 py-1 rounded-full text-xs font-bold ${count > 0 ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400'}">
-                                ${count} คน
-                            </span>
-                        </td>
-                        <td class="p-4 text-right pr-6">
-                            <button class="text-slate-400 group-hover:text-blue-600 font-bold text-sm">
-                                ดูรายชื่อ →
-                            </button>
-                        </td>
-                    </tr>
-                    `;
-                }).join('');
-            }
+            // 3. ✅ เรียกฟังก์ชันแสดงตาราง Event Selector
+            renderEventSelector();
         }
 
-        // --- REGISTRATION VIEW LOGIC ---
-        function viewRegistrations(eventId, eventName) {
-            // กรองเอาเฉพาะคนสมัครงานนี้
-            const filteredRegis = allRegis.filter(r => r.eventId === eventId);
+        // --- ✅ NEW LOGIC: RENDER EVENT SELECTOR ---
+        function renderEventSelector() {
+            // 1. ดึงงาน Official ทั้งหมด
+            let list = allEvents.filter(e => e.is_official === true);
             
+            // 2. เรียงลำดับจาก "วันที่ใหม่ล่าสุด" ไป "เก่า"
+            // (เพื่อให้งานใหม่ขึ้นบน และเลขลำดับจะนับถอยหลัง)
+            list.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // 3. กรองตามคำค้นหา (Search)
+            const keyword = document.getElementById('search-event').value.toLowerCase();
+            if (keyword) {
+                list = list.filter(e => e.title_th.toLowerCase().includes(keyword));
+            }
+
+            const container = document.getElementById('regis-event-list');
+
+            if (list.length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">ไม่พบงานที่ค้นหา</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = list.map((e, index) => {
+                const count = allRegis.filter(r => r.eventId === e._id).length;
+                
+                // 🔥 คำนวณเลขลำดับ: เอาจำนวนทั้งหมด - index
+                // เช่น มี 5 งาน: บรรทัดแรกจะเป็นเลข 5, บรรทัดสุดท้ายเป็นเลข 1
+                const rankNumber = list.length - index;
+
+                return `
+                <tr onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="hover:bg-blue-50 cursor-pointer transition group border-b border-slate-100 last:border-0">
+                    <td class="p-4 text-center font-mono text-slate-400 font-bold">${rankNumber}</td>
+                    
+                    <td class="p-4 pl-0">
+                        <div class="flex items-center gap-3">
+                            <img src="${e.image || 'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover border border-slate-200">
+                            <div>
+                                <div class="font-bold text-slate-800 group-hover:text-blue-700">${e.title_th}</div>
+                                <div class="text-xs text-slate-400">${e.location_th}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-slate-600">${e.date}</td>
+                    <td class="p-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${count > 0 ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400'}">
+                            ${count} คน
+                        </span>
+                    </td>
+                    <td class="p-4 text-right pr-6">
+                        <button class="text-slate-400 group-hover:text-blue-600 font-bold text-sm">
+                            ดูรายชื่อ →
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // --- LOGIC: ดูรายชื่อ ---
+        function viewRegistrations(eventId, eventName) {
+            const filteredRegis = allRegis.filter(r => r.eventId === eventId);
             document.getElementById('current-event-name').innerText = `รายชื่อ: ${eventName}`;
             document.getElementById('current-event-count').innerText = `จำนวนทั้งหมด ${filteredRegis.length} คน`;
 
@@ -293,7 +315,6 @@
                 `).join('');
             }
 
-            // สลับหน้าจอ
             document.getElementById('regis-selector').classList.add('hidden');
             document.getElementById('regis-list').classList.remove('hidden');
         }
@@ -303,7 +324,7 @@
             document.getElementById('regis-selector').classList.remove('hidden');
         }
 
-        // --- OFFICIAL EVENT LOGIC (เหมือนเดิม) ---
+        // --- LOGIC: Official (Create/Edit) ---
         function openOfficialModal() { 
             document.getElementById('off-id').value = ''; 
             document.getElementById('modal-title').innerText = "เพิ่มงาน Official";
@@ -343,13 +364,12 @@
             try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('Success!'); } catch(err) { alert('Error'); }
         }
 
-        // NAV & ACTIONS
         function switchTab(tab) {
             document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-slate-800', 'text-white'));
             document.getElementById(`view-${tab}`).classList.remove('hidden');
             document.getElementById(`btn-${tab}`).classList.add('bg-slate-800', 'text-white');
-            if(tab === 'registrations') backToSelector(); // รีเซ็ตหน้าเลือกงานเสมอ
+            if(tab === 'registrations') backToSelector();
         }
         async function updateStatus(id,st){if(confirm('ยืนยัน?')){await fetch(`${API_URL}/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})});fetchData();}}
         async function deleteEvent(id){if(confirm('ลบ?')){await fetch(`${API_URL}/${id}`,{method:'DELETE'});fetchData();}}
