@@ -1,4 +1,205 @@
-<script src="js/data.js"></script>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action.in.th - รวมงานวิ่งมาราธอน เทรล ทั่วไทย</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+                        action: { 500: '#10b981', 600: '#059669', 700: '#047857' }
+                    },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1552674605-46d536733198?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover; background-position: center;
+        }
+        .container-wide { width: 100%; max-width: 95%; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1600px) { .container-wide { max-width: 1800px; } }
+        /* Modal Animation */
+        .modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .modal.active { opacity: 1; visibility: visible; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen relative" onclick="closeLangDropdown(event)">
+
+    <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="container-wide px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex items-center gap-3 cursor-pointer">
+                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">A</div>
+                    <span class="font-bold text-xl text-slate-800">Action.in.th</span>
+                </a>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-3">
+                        <a href="index.html" class="text-brand-600 bg-brand-50 px-3 py-2 text-sm font-medium rounded-lg" data-i18n="nav_home">หน้าแรก</a>
+                        <a href="calendar.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
+                        
+                        <button onclick="openSubmitModal()" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <span data-i18n="btn_submit">ฝากกิจกรรม</span>
+                        </button>
+                        
+                        <a href="login.html" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-50 transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
+                    </div>
+
+                    <div class="relative pl-2 border-l border-slate-200 md:border-none md:pl-0">
+                        <button onclick="toggleLangDropdown(event)" id="lang-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 transition">
+                            <span class="text-base">🇹🇭</span> TH
+                        </button>
+                        <div id="lang-menu" class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 hidden z-50">
+                            <button onclick="changeLanguage('th')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇹🇭 Thai</button>
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇬🇧 English</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-bg h-[500px] flex items-center justify-center text-center px-4 relative">
+        <div class="max-w-3xl text-white space-y-6">
+            <span class="bg-brand-500/20 border border-brand-400/30 text-brand-100 px-4 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+                🏃‍♂️ แพลตฟอร์มรวมงานวิ่งอันดับ 1 ของไทย
+            </span>
+            <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+                ค้นหาความท้าทายใหม่<br>
+                <span class="text-brand-400">ในทุกก้าวของคุณ</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-200 font-light">
+                รวบรวมงานวิ่ง Road, Trail และ Triathlon ทั่วประเทศไว้ในที่เดียว<br>
+                อัปเดตข้อมูลล่าสุด สมัครง่าย ไม่พลาดทุกสนาม
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <a href="calendar.html" class="bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-brand-500/30 transition transform hover:-translate-y-1">
+                    ค้นหางานวิ่ง
+                </a>
+                <button onclick="openSubmitModal()" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-3 rounded-xl font-bold text-lg transition">
+                    ฝากกิจกรรม
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div><div class="text-3xl font-bold text-brand-600">500+</div><div class="text-slate-500 text-sm">งานวิ่งในปีนี้</div></div>
+            <div><div class="text-3xl font-bold text-action-500">50K+</div><div class="text-slate-500 text-sm">นักวิ่งใช้งาน</div></div>
+            <div><div class="text-3xl font-bold text-orange-500">77</div><div class="text-slate-500 text-sm">จังหวัดทั่วไทย</div></div>
+            <div><div class="text-3xl font-bold text-slate-700">24/7</div><div class="text-slate-500 text-sm">อัปเดตตลอดเวลา</div></div>
+        </div>
+    </section>
+
+    <section class="bg-slate-50 py-16">
+        <div class="container-wide px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-action-100 text-action-700 text-xs font-bold px-2 py-1 rounded-full">Official Partner</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-900">ตัวอย่างงานวิ่งในระบบของเรา 🏆</h2>
+                    <p class="text-slate-500 mt-2">กิจกรรมคุณภาพที่เปิดรับสมัครผ่าน Action.in.th</p>
+                </div>
+                <a href="calendar.html" class="hidden md:inline-flex items-center text-brand-600 font-bold hover:text-brand-700 transition">
+                    ดูทั้งหมด <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </a>
+            </div>
+
+            <div id="featured-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <div class="col-span-full text-center py-10 text-slate-400">กำลังโหลดข้อมูล...</div>
+            </div>
+
+            <div class="mt-10 text-center md:hidden">
+                <a href="calendar.html" class="inline-block bg-white border border-slate-200 text-slate-700 px-8 py-3 rounded-full font-bold shadow-sm">ดูงานวิ่งทั้งหมด</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-slate-900 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#0EA5E9" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.2,-19.2,95.8,-5.2C93.5,8.8,82,21.9,71.1,33.4C60.2,44.9,49.9,54.8,38.1,62.7C26.3,70.6,13.1,76.5,-1.2,78.6C-15.5,80.7,-31,79,-44.6,72.4C-58.2,65.8,-69.9,54.3,-77.6,40.8C-85.3,27.3,-89,11.8,-86.6,-2.4C-84.2,-16.6,-75.7,-29.5,-65.3,-40.1C-54.9,-50.7,-42.6,-59,-29.9,-67C-17.2,-75,-4.1,-82.7,8.2,-96.9L20.5,-111.1" transform="translate(100 100)" /></svg>
+        </div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">คุณเป็นผู้จัดงานวิ่งใช่ไหม?</h2>
+            <p class="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
+                โปรโมทงานของคุณให้นักวิ่งนับแสนคนเห็นได้ฟรี! 
+                ระบบจัดการง่าย อนุมัติไว และเข้าถึงกลุ่มเป้าหมายได้ตรงจุด
+            </p>
+            <button onclick="openSubmitModal()" class="bg-action-500 hover:bg-action-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-action-500/30 transition transform hover:scale-105">
+                ลงประกาศงานวิ่ง ฟรี!
+            </button>
+        </div>
+    </section>
+
+    <footer class="bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-sm">
+        <div class="flex justify-center gap-6 mb-4">
+            <a href="login.html" class="hover:text-brand-600">เกี่ยวกับเรา</a>
+            <a href="login.html" class="hover:text-brand-600">ติดต่อโฆษณา</a>
+            <a href="login.html" class="hover:text-brand-600">นโยบายความเป็นส่วนตัว</a>
+        </div>
+        &copy; 2026 Action.in.th - Designed for Runners
+    </footer>
+
+    <div id="submit-modal" class="fixed inset-0 z-[70] flex items-center justify-center invisible opacity-0 modal">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSubmitModal()"></div>
+        <div class="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl z-20 flex flex-col max-h-[90vh] relative">
+            <div class="px-6 py-4 bg-action-500 rounded-t-2xl text-white font-bold flex justify-between items-center">
+                <span class="flex items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <span data-i18n="form_title">ฝากกิจกรรมใหม่</span>
+                </span>
+                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto bg-white space-y-5">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_name">ชื่อกิจกรรม *</label><input type="text" id="new-title" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 outline-none" placeholder="เช่น Pattaya Beach Run 2026"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_date">วันที่ *</label><input type="date" id="new-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" value="2026-03-01"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_province">จังหวัด *</label><select id="new-province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option></select></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_type">ประเภท *</label><select id="new-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Road">Road</option><option value="Trail">Trail</option></select></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_dist">ระยะทาง</label><input type="text" id="new-distance" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="10K, 21K"></div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_link">ลิงก์รับสมัคร</label><input type="url" id="new-link" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="https://..."></div>
+                    </div>
+                </div>
+                <hr class="border-slate-200 my-2">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_contact_name">ชื่อผู้ติดต่อ *</label><input type="text" id="new-submitter" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="ชื่อ-นามสกุล"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_email">อีเมล</label><input type="email" id="new-email" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="name@email.com"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_tel">เบอร์โทร</label><input type="tel" id="new-phone" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none" placeholder="08x-xxx-xxxx"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-4">
+                    <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button onclick="handleFormSubmit()" class="flex-1 py-2.5 bg-action-500 rounded-xl text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
     <script>
         let currentLang = 'th';
 
@@ -33,7 +234,7 @@
             const container = document.getElementById('featured-container');
             
             // ป้องกัน Error กรณี eventsData ยังไม่มา
-            if (!eventsData) return;
+            if (typeof eventsData === 'undefined') return;
 
             // เลือกมา 10 งานแรก
             const featured = eventsData.slice(0, 10);
@@ -68,16 +269,15 @@
                 // กรณีไม่มีข้อมูล (Database ว่าง)
                 container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">ยังไม่มีงานวิ่งในระบบ (ลองกดฝากกิจกรรมดูสิ!)</div>`;
             }
-        } 
-        // (ลบปีกกาที่เกินตรงนี้ออกแล้ว)
+        }
 
         // --- Modal Logic ---
         function openSubmitModal() { document.getElementById('submit-modal').classList.remove('invisible'); document.getElementById('submit-modal').classList.add('active'); }
         function closeSubmitModal() { document.getElementById('submit-modal').classList.remove('active'); setTimeout(()=>document.getElementById('submit-modal').classList.add('invisible'), 200); }
-        
-        // (ลบฟังก์ชัน handleFormSubmit ตัวเก่าออกแล้ว เพื่อให้ไปใช้ตัวใหม่ใน js/data.js)
 
         document.addEventListener('DOMContentLoaded', () => {
             renderFeatured();
         });
     </script>
+</body>
+</html>
