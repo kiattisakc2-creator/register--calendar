@@ -7,82 +7,120 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body{font-family:'Prompt',sans-serif;}</style>
-
-    <script>
-        // ตั้งรหัสผ่านตรงนี้
-        const ADMIN_PASS = "1234"; 
-
-        // ตรวจสอบว่าเคยใส่รหัสหรือยัง
-        if (sessionStorage.getItem("isAdmin") !== "true") {
-            const input = prompt("กรุณาใส่รหัสผ่าน Admin เพื่อเข้าใช้งาน:");
-            
-            if (input === ADMIN_PASS) {
-                sessionStorage.setItem("isAdmin", "true"); // จำไว้ว่าผ่านแล้ว
-            } else {
-                alert("รหัสผ่านไม่ถูกต้อง!");
-                window.location.href = "../index.html"; // ดีดกลับไปหน้าแรกทันที
-            }
-        }
-    </script>
 </head>
-<body class="bg-slate-100 p-10">
+<body class="bg-slate-100 min-h-screen">
 
-    <div class="max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-3">
-                <h1 class="text-3xl font-bold text-slate-800">Admin Dashboard 🛠️</h1>
-                <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs">Login: Admin</span>
+    <div id="login-section" class="fixed inset-0 bg-slate-800 z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm p-8 rounded-2xl shadow-2xl text-center">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Admin Login</h2>
+            <p class="text-slate-500 text-sm mb-6">กรุณายืนยันตัวตนเพื่อเข้าสู่ระบบจัดการ</p>
             
-            <a href="../index.html" class="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                กลับหน้าหลัก
-            </a>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-center tracking-widest" placeholder="รหัสผ่าน (1234)">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-500/30">เข้าสู่ระบบ</button>
+            </form>
+            <div class="mt-6">
+                <a href="../index.html" class="text-sm text-slate-400 hover:text-slate-600">← กลับหน้าหลัก</a>
+            </div>
         </div>
+    </div>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-800 text-white">
-                    <tr>
-                        <th class="p-4 w-32">วันที่</th>
-                        <th class="p-4">ชื่องาน</th>
-                        <th class="p-4 w-48">ผู้ฝาก</th>
-                        <th class="p-4 w-32">สถานะ</th>
-                        <th class="p-4 w-48 text-center">จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="event-table-body">
-                    <tr><td colspan="5" class="p-10 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="mt-4 text-center text-slate-400 text-sm">
-            ระบบจัดการงานวิ่ง Action.in.th (Backend Connected)
+    <div id="dashboard-section" class="hidden p-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-bold text-slate-800">Admin Dashboard 🛠️</h1>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Verified</span>
+                </div>
+                
+                <div class="flex gap-4">
+                    <a href="../index.html" target="_blank" class="flex items-center gap-1 text-slate-500 hover:text-blue-600 font-medium transition text-sm">
+                        เปิดหน้าเว็บจริง ↗
+                    </a>
+                    <button onclick="logout()" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 font-bold text-sm shadow-sm transition">
+                        ออกจากระบบ
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-800 text-white">
+                        <tr>
+                            <th class="p-4 w-32">วันที่</th>
+                            <th class="p-4">ชื่องาน</th>
+                            <th class="p-4 w-48">ผู้ฝาก</th>
+                            <th class="p-4 w-32">สถานะ</th>
+                            <th class="p-4 w-48 text-center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="event-table-body">
+                        <tr><td colspan="5" class="p-10 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script src="../js/data.js"></script>
-    
     <script>
-        // ฟังก์ชันดึงข้อมูลมาโชว์ในตาราง
+        const ADMIN_PASS = "1234"; // 🔑 ตั้งรหัสผ่านตรงนี้
+
+        // 1. ตรวจสอบสถานะล็อกอินทันทีที่เปิดหน้า
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem("isAdmin") === "true";
+            const loginSec = document.getElementById('login-section');
+            const dashSec = document.getElementById('dashboard-section');
+
+            if (isAuth) {
+                // ถ้าล็อกอินแล้ว: ซ่อนหน้า Login / โชว์ Dashboard / โหลดข้อมูล
+                loginSec.classList.add('hidden');
+                dashSec.classList.remove('hidden');
+                fetchAdminEvents();
+            } else {
+                // ถ้ายังไม่ล็อกอิน: โชว์หน้า Login / ซ่อน Dashboard
+                loginSec.classList.remove('hidden');
+                dashSec.classList.add('hidden');
+            }
+        }
+
+        // 2. ฟังก์ชันกดปุ่ม Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const input = document.getElementById('admin-pass').value;
+            
+            if (input === ADMIN_PASS) {
+                sessionStorage.setItem("isAdmin", "true"); // จำสถานะ
+                checkAuth(); // รีเฟรชหน้าจอ
+            } else {
+                alert("รหัสผ่านไม่ถูกต้อง! ลองใหม่นะ");
+                document.getElementById('admin-pass').value = '';
+                document.getElementById('admin-pass').focus();
+            }
+        }
+
+        // 3. ฟังก์ชัน Logout
+        function logout() {
+            if(confirm("ต้องการออกจากระบบใช่ไหม?")) {
+                sessionStorage.removeItem("isAdmin"); // ลบความจำ
+                window.location.reload(); // รีโหลดหน้าเว็บเพื่อให้กลับไปหน้า Login
+            }
+        }
+
+        // --- ส่วนดึงข้อมูล (เหมือนเดิม) ---
         async function fetchAdminEvents() {
             try {
-                // API_URL มาจาก data.js (ซึ่งตอนนี้โหลดได้แล้วเพราะแก้ path)
                 const response = await fetch(API_URL); 
                 const data = await response.json();
                 renderTable(data);
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('event-table-body').innerHTML = `
-                    <tr><td colspan="5" class="p-10 text-center text-red-500">
-                        เชื่อมต่อ Server ไม่ได้! <br>
-                        <span class="text-sm text-gray-400">(อย่าลืมเปิด Codespaces หรือเช็คว่าไฟล์ data.js เชื่อมถูกไหม)</span>
-                    </td></tr>`;
             }
         }
 
-        // วาดตาราง
         function renderTable(events) {
             const tbody = document.getElementById('event-table-body');
             if(events.length === 0) {
@@ -119,39 +157,30 @@
         function getStatusColor(status) {
             if (status === 'open') return 'bg-green-50 text-green-700 border-green-200';
             if (status === 'closed') return 'bg-red-50 text-red-700 border-red-200';
-            return 'bg-yellow-50 text-yellow-700 border-yellow-200'; // pending
+            return 'bg-yellow-50 text-yellow-700 border-yellow-200';
         }
 
-        // ฟังก์ชัน อนุมัติ/แก้ไขสถานะ
         async function updateStatus(id, newStatus) {
-            // ไม่ต้อง confirm บ่อยๆ ถ้าแค่อนุมัติ
-            const btnText = newStatus === 'open' ? 'อนุมัติงาน' : 'ปิดรับสมัคร';
-            if(!confirm(`ยืนยัน ${btnText}?`)) return;
-            
             try {
                 await fetch(`${API_URL}/${id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: newStatus })
                 });
-                fetchAdminEvents(); // โหลดตารางใหม่
+                fetchAdminEvents();
             } catch(e) { alert('Error updating status'); }
         }
 
-        // ฟังก์ชัน ลบงาน
         async function deleteEvent(id) {
-            if(!confirm('⚠️ คำเตือน: ยืนยันที่จะลบงานนี้ถาวร?')) return;
-
+            if(!confirm('⚠️ ยืนยันที่จะลบงานนี้ถาวร?')) return;
             try {
-                await fetch(`${API_URL}/${id}`, {
-                    method: 'DELETE'
-                });
-                fetchAdminEvents(); // โหลดตารางใหม่
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                fetchAdminEvents();
             } catch(e) { alert('Error deleting event'); }
         }
 
-        // เริ่มทำงาน
-        fetchAdminEvents();
+        // เริ่มตรวจสอบสิทธิ์เมื่อเปิดเว็บ
+        checkAuth();
     </script>
 </body>
 </html>
