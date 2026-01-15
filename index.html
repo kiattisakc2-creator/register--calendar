@@ -232,34 +232,43 @@
         // --- Render 10 Featured Events ---
         // ในไฟล์ index.html
 
-function renderFeatured() {
-    const container = document.getElementById('featured-container');
-    // ดึง 10 งานแรก
-    const featured = eventsData.slice(0, 10);
-    
-    // ✅ แก้ไข: เช็คว่ามีข้อมูลหรือไม่
-    if(featured.length > 0) {
-        // กรณีมีข้อมูล: วาดการ์ด
-        container.innerHTML = featured.map(e => `
-            <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col h-full" onclick="window.location.href='detail.html?id=${e.id}&lang=${currentLang}'">
-                <div class="h-48 overflow-hidden relative">
-                    <img src="${e.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-slate-700 shadow-sm flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-action-500"></span> ${e.type}
+// --- Render 10 Featured Events ---
+        function renderFeatured() {
+            const container = document.getElementById('featured-container');
+            // เลือกมา 10 งานแรก
+            const featured = eventsData.slice(0, 10);
+            
+            if(featured.length > 0) {
+                // กรณีมีข้อมูล: วาดการ์ดออกมา
+                container.innerHTML = featured.map(e => `
+                    <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col h-full" onclick="window.location.href='detail.html?id=${e.id}&lang=${currentLang}'">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${e.image}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-slate-700 shadow-sm flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-action-500"></span> ${e.type}
+                            </div>
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="flex items-center gap-2 text-xs font-bold text-brand-600 mb-2">
+                                📅 ${e.date}
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-brand-600 transition">${currentLang==='th'?e.title_th:e.title_en}</h3>
+                            <div class="text-xs text-slate-500 flex items-center gap-1 mb-3">
+                                📍 ${currentLang==='th'?e.location_th:e.location_en}
+                            </div>
+                            
+                            <div class="mt-auto pt-3 border-t border-slate-50 flex justify-between items-center">
+                                <span class="text-[10px] bg-action-50 text-action-700 px-2 py-1 rounded border border-action-100 font-semibold">รับสมัครผ่านระบบ</span>
+                                <span class="text-xs text-slate-400">👉 ดูรายละเอียด</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <div class="flex items-center gap-2 text-xs font-bold text-brand-600 mb-2">📅 ${e.date}</div>
-                    <h3 class="text-base font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-brand-600 transition">${currentLang==='th'?e.title_th:e.title_en}</h3>
-                    <div class="text-xs text-slate-500 flex items-center gap-1 mb-3">📍 ${currentLang==='th'?e.location_th:e.location_en}</div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        // ✅ กรณีไม่มีข้อมูล (Database ว่าง): ให้บอกว่า "ไม่พบข้อมูล" แทน "กำลังโหลด"
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">ยังไม่มีงานวิ่งในระบบ (ลองกดฝากกิจกรรมดูสิ!)</div>`;
-    }
-}
+                `).join('');
+            } else {
+                // ✅ เพิ่มส่วนนี้ครับ: ถ้า Database ว่างเปล่า ให้แสดงข้อความนี้แทนการหมุนติ้วๆ
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">ยังไม่มีงานวิ่งในระบบ (ลองกดฝากกิจกรรมดูสิ!)</div>`;
+            }
+        }
         }
 
         // --- Modal Logic ---
