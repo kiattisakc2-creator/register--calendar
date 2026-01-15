@@ -19,48 +19,18 @@
             }
         }
     </script>
-    <style>
-        body { background-color: #f8fafc; }
-        .container-wide { width: 100%; max-width: 95%; margin-left: auto; margin-right: auto; }
-        @media (min-width: 1600px) { .container-wide { max-width: 1800px; } }
-        /* Modal Animation */
-        .modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
-        .modal.active { opacity: 1; visibility: visible; }
-    </style>
+    <style>body{background-color:#f8fafc;}</style>
 </head>
-<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen relative" onclick="closeLangDropdown(event)">
+<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen">
 
     <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="container-wide px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-3 cursor-pointer">
-                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">A</div>
-                    <span class="font-bold text-xl text-slate-800">Action.in.th</span>
+                <a href="index.html" class="flex items-center gap-3 font-bold text-xl text-slate-800">
+                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md">A</div>
+                    Action.in.th
                 </a>
-                
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex items-center space-x-2">
-                        <a href="index.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_home">หน้าแรก</a>
-                        <a href="calendar.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
-                        
-                        <button onclick="openSubmitModal()" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            <span data-i18n="btn_submit">ฝากกิจกรรม</span>
-                        </button>
-                        
-                        <a href="login.html" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-50 transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
-                    </div>
-
-                    <div class="relative pl-2 border-l border-slate-200 md:border-none md:pl-0">
-                        <button onclick="toggleLangDropdown(event)" id="lang-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 transition">
-                            <span class="text-base">🇹🇭</span> TH
-                        </button>
-                        <div id="lang-menu" class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 hidden z-50">
-                            <button onclick="changeLanguage('th')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇹🇭 Thai</button>
-                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇬🇧 English</button>
-                        </div>
-                    </div>
-                </div>
+                <a href="index.html" class="text-slate-500 hover:text-brand-600 font-medium">← กลับหน้าหลัก</a>
             </div>
         </div>
     </nav>
@@ -70,114 +40,104 @@
 
         <div id="content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-2 space-y-6">
-                <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-100 h-[300px] md:h-[400px] relative bg-slate-200">
-                    <img id="event-img" src="" class="w-full h-full object-cover">
-                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-sm font-bold shadow text-brand-700">
-                        Official Event 🏆
-                    </div>
+            <div class="lg:col-span-1 space-y-6">
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-100 relative">
+                    <img id="event-img" src="" class="w-full h-auto object-cover">
                 </div>
-
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h1 id="event-title" class="text-2xl md:text-3xl font-bold text-slate-800 mb-4">Title</h1>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600 mb-6">
-                        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
-                            <span class="text-2xl">📅</span>
-                            <div>
-                                <div class="font-bold text-slate-900" data-i18n="form_date">วันที่จัดงาน</div>
-                                <div id="event-date">-</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
-                            <span class="text-2xl">📍</span>
-                            <div>
-                                <div class="font-bold text-slate-900" data-i18n="form_province">สถานที่</div>
-                                <div id="event-loc">-</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
-                            <span class="text-2xl">🏃</span>
-                            <div>
-                                <div class="font-bold text-slate-900">ระยะทาง</div>
-                                <div id="event-dist">-</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
-                            <span class="text-2xl">💰</span>
-                            <div>
-                                <div class="font-bold text-slate-900">ค่าสมัคร</div>
-                                <div id="event-price">-</div>
-                            </div>
-                        </div>
+                    <h1 id="event-title" class="text-xl font-bold text-slate-800 mb-4">Title</h1>
+                    <div class="space-y-3 text-sm text-slate-600">
+                        <div class="flex justify-between border-b pb-2"><span>📅 วันที่</span><span id="event-date" class="font-bold">-</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>📍 สถานที่</span><span id="event-loc" class="font-bold">-</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>🏃 ระยะทาง</span><span id="event-dist" class="font-bold">-</span></div>
+                        <div class="flex justify-between pt-1"><span>💰 ค่าสมัคร</span><span id="event-price" class="font-bold text-brand-600">-</span></div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 sticky top-24">
-                    <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
-                        <span>📝</span> <span data-i18n="reg_title">สมัครเข้าร่วมกิจกรรม</span>
+            <div class="lg:col-span-2">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                        📝 แบบฟอร์มสมัครเข้าร่วม (Official Registration)
                     </h2>
-                    <p class="text-xs text-slate-400 mb-4">กรุณากรอกข้อมูลให้ครบถ้วน</p>
 
-                    <form onsubmit="handleRegister(event)" class="space-y-4">
+                    <form onsubmit="handleRegister(event)" class="space-y-8">
                         <input type="hidden" id="reg-event-id">
                         <input type="hidden" id="reg-event-name">
 
-                        <div>
-                            <label class="label-text" data-i18n="form_contact_name">ชื่อ-นามสกุล</label>
-                            <input type="text" id="reg-name" class="input-field" placeholder="Full Name" required>
-                        </div>
-
-                        <div>
-                            <label class="label-text">ชื่อบน BIB (ENG)</label>
-                            <input type="text" id="reg-bib" class="input-field" placeholder="BIB Name" required>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="label-text">เพศ</label>
-                                <select id="reg-gender" class="input-field">
-                                    <option value="Male">ชาย (Male)</option>
-                                    <option value="Female">หญิง (Female)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="label-text">ไซส์เสื้อ</label>
-                                <select id="reg-size" class="input-field">
-                                    <option value="XS">XS</option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                    <option value="XL">XL</option>
-                                </select>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                            <h3 class="text-lg font-bold text-brand-700 mb-4 border-b border-slate-200 pb-2">1. ข้อมูลส่วนตัว (Personal Info)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="label">ชื่อจริง (First Name)</label><input type="text" id="reg-fname" class="input" required></div>
+                                <div><label class="label">นามสกุล (Last Name)</label><input type="text" id="reg-lname" class="input" required></div>
+                                <div><label class="label">เลขบัตรประชาชน/Passport</label><input type="text" id="reg-idcard" class="input" required placeholder="ใช้สำหรับประกันอุบัติเหตุ"></div>
+                                <div><label class="label">วันเกิด (วว/ดด/ปปปป)</label><input type="date" id="reg-birth" class="input" required></div>
+                                <div><label class="label">สัญชาติ</label><input type="text" id="reg-nation" class="input" value="Thai"></div>
+                                <div>
+                                    <label class="label">หมู่เลือด</label>
+                                    <select id="reg-blood" class="input">
+                                        <option value="A">A</option><option value="B">B</option><option value="O">O</option><option value="AB">AB</option><option value="Unknown">ไม่ทราบ</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="label">เพศ</label>
+                                    <select id="reg-gender" class="input">
+                                        <option value="Male">ชาย (Male)</option><option value="Female">หญิง (Female)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="label-text">ระยะทาง</label>
-                                <select id="reg-distance" class="input-field">
-                                    <option value="5K">5 KM</option>
-                                    <option value="10K">10 KM</option>
-                                    <option value="21K">21 KM</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="label-text">เบอร์โทรศัพท์</label>
-                                <input type="tel" id="reg-phone" class="input-field" placeholder="08x-xxx-xxxx" required>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                            <h3 class="text-lg font-bold text-brand-700 mb-4 border-b border-slate-200 pb-2">2. การจัดส่ง & ติดต่อ (Shipping)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2"><label class="label">ที่อยู่จัดส่ง (Address)</label><input type="text" id="reg-address" class="input" placeholder="เลขที่, หมู่บ้าน, ซอย, ถนน"></div>
+                                <div><label class="label">จังหวัด</label><input type="text" id="reg-province" class="input"></div>
+                                <div><label class="label">รหัสไปรษณีย์</label><input type="text" id="reg-zip" class="input"></div>
+                                <div><label class="label">เบอร์โทรศัพท์</label><input type="tel" id="reg-phone" class="input" required></div>
+                                <div><label class="label">อีเมล</label><input type="email" id="reg-email" class="input" required></div>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="label-text">อีเมล</label>
-                            <input type="email" id="reg-email" class="input-field" placeholder="Email" required>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                            <h3 class="text-lg font-bold text-red-700 mb-4 border-b border-slate-200 pb-2">3. ข้อมูลฉุกเฉิน (Emergency & Medical)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="label">ชื่อผู้ติดต่อฉุกเฉิน</label><input type="text" id="reg-em-name" class="input" required></div>
+                                <div><label class="label">ความสัมพันธ์</label><input type="text" id="reg-em-rel" class="input" placeholder="เช่น พ่อ, แม่, เพื่อน"></div>
+                                <div class="md:col-span-2"><label class="label">เบอร์โทรฉุกเฉิน (ห้ามซ้ำกับเบอร์ตัวเอง)</label><input type="tel" id="reg-em-phone" class="input" required></div>
+                                <div class="md:col-span-2"><label class="label">โรคประจำตัว / ยาที่แพ้ (ถ้าไม่มีใส่ -)</label><textarea id="reg-med" class="input h-20" required>-</textarea></div>
+                            </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-action-500 hover:bg-action-600 text-white font-bold py-3 rounded-xl shadow-md transition transform hover:scale-[1.02] mt-4" data-i18n="btn_register">
-                            ยืนยันการสมัคร
-                        </button>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                            <h3 class="text-lg font-bold text-brand-700 mb-4 border-b border-slate-200 pb-2">4. ข้อมูลการแข่งขัน (Race Info)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="label">ชื่อบน BIB (ภาษาอังกฤษ)</label><input type="text" id="reg-bib" class="input uppercase" placeholder="MAX 10 CHARS" maxlength="10" required></div>
+                                <div>
+                                    <label class="label">ระยะทาง</label>
+                                    <select id="reg-dist-select" class="input"><option>10K</option><option>5K</option></select>
+                                </div>
+                                <div>
+                                    <label class="label">ไซส์เสื้อ</label>
+                                    <select id="reg-size" class="input"><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option></select>
+                                </div>
+                                <div><label class="label">ชมรมวิ่ง (Running Club)</label><input type="text" id="reg-club" class="input" placeholder="ถ้ามี"></div>
+                                <div>
+                                    <label class="label">วิธีรับของ (Race Pack)</label>
+                                    <select id="reg-ship" class="input"><option value="pickup">รับเองหน้างาน</option><option value="post">ส่งไปรษณีย์ (+50บ.)</option></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <div class="flex items-start gap-3 mb-6">
+                                <input type="checkbox" required class="mt-1 w-5 h-5">
+                                <span class="text-sm text-slate-600">ข้าพเจ้ายอมรับกติกาและรับรองว่ามีสุขภาพแข็งแรงพร้อมสำหรับการแข่งขัน (Waiver Accepted)</span>
+                            </div>
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.01] text-lg">
+                                ยืนยันการสมัครและชำระเงิน
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -185,96 +145,17 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-sm mt-auto">
-        <div class="flex justify-center gap-6 mb-4">
-            <a href="login.html" class="hover:text-brand-600" data-i18n="nav_login">เข้าสู่ระบบ</a>
-            <a href="admin/index.html" class="hover:text-brand-600">Admin Dashboard</a>
-        </div>
         &copy; 2026 Action.in.th
     </footer>
 
-    <div id="submit-modal" class="fixed inset-0 z-[70] flex items-center justify-center invisible opacity-0 modal">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSubmitModal()"></div>
-        <div class="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl z-20 flex flex-col max-h-[90vh] relative">
-            <div class="px-6 py-4 bg-action-500 rounded-t-2xl text-white font-bold flex justify-between items-center">
-                <span class="flex items-center gap-2 text-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                    <span data-i18n="form_title">ฝากกิจกรรมใหม่</span>
-                </span>
-                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            
-            <div class="p-6 overflow-y-auto bg-white space-y-5">
-                <div>
-                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
-                    <div class="space-y-4">
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_name">ชื่อกิจกรรม *</label><input type="text" id="new-title" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 outline-none"></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_date">วันที่ *</label><input type="date" id="new-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
-                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_province">จังหวัด *</label><select id="new-province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option></select></div>
-                        </div>
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_link">ลิงก์รับสมัคร</label><input type="url" id="new-link" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
-                    </div>
-                </div>
-                <hr class="border-slate-200 my-2">
-                <div>
-                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ</h4>
-                    <div class="space-y-4">
-                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_contact_name">ชื่อผู้ติดต่อ *</label><input type="text" id="new-submitter" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
-                    </div>
-                </div>
-                <div class="pt-4 flex gap-4">
-                    <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition" data-i18n="btn_cancel">ยกเลิก</button>
-                    <button onclick="handleFormSubmit()" class="flex-1 py-2.5 bg-action-500 rounded-xl text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <style>
-        .label-text { display: block; font-size: 0.875rem; font-weight: 500; color: #334155; margin-bottom: 0.25rem; }
-        .input-field { width: 100%; padding: 0.625rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.875rem; outline: none; transition: border-color 0.2s; }
-        .input-field:focus { border-color: #0ea5e9; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1); }
+        .label { display: block; font-size: 0.875rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem; }
+        .input { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.95rem; outline: none; transition: all 0.2s; background-color: #fff; }
+        .input:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
     </style>
 
     <script src="js/data.js"></script>
     <script>
-        let currentLang = 'th';
-        
-        // --- 1. Language & Navbar Logic ---
-        function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
-        function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
-
-        function changeLanguage(lang) {
-            currentLang = lang;
-            document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
-            document.getElementById('lang-menu').classList.add('hidden');
-            
-            // แปลข้อความ Static
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(translations[lang][key]) el.innerText = translations[lang][key];
-            });
-
-            // แปล Placeholder
-            if(lang === 'th') {
-                if(document.getElementById('new-title')) document.getElementById('new-title').placeholder = "เช่น Pattaya Beach Run";
-                if(document.getElementById('reg-name')) document.getElementById('reg-name').placeholder = "ชื่อ-นามสกุล";
-            } else {
-                if(document.getElementById('new-title')) document.getElementById('new-title').placeholder = "e.g. Pattaya Beach Run";
-                if(document.getElementById('reg-name')) document.getElementById('reg-name').placeholder = "Full Name";
-            }
-        }
-
-        // --- 2. Modal Logic (สำหรับ Navbar) ---
-        function openSubmitModal() { document.getElementById('submit-modal').classList.remove('invisible'); document.getElementById('submit-modal').classList.add('active'); }
-        function closeSubmitModal() { document.getElementById('submit-modal').classList.remove('active'); setTimeout(()=>document.getElementById('submit-modal').classList.add('invisible'), 200); }
-        async function handleFormSubmit() {
-            // ... (Logic ฝากงาน เหมือนหน้าแรก)
-            alert("ขออภัย! กรุณาฝากงานผ่านหน้าแรก (ฟังก์ชันนี้ใช้โค้ดร่วมกัน)");
-            window.location.href = 'index.html';
-        }
-
-        // --- 3. Page Logic (ดึงข้อมูลงาน + สมัคร) ---
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
 
@@ -282,45 +163,64 @@
             if (!eventId) { alert('ไม่พบรหัสกิจกรรม'); window.location.href = 'index.html'; return; }
             try {
                 const res = await fetch(`${API_URL}/${eventId}`);
-                if (!res.ok) throw new Error('Event not found');
                 const event = await res.json();
 
                 document.getElementById('event-img').src = event.image || 'https://via.placeholder.com/800x400';
-                // เลือกภาษาสำหรับ Title
-                const title = currentLang === 'th' ? event.title_th : (event.title_en || event.title_th);
-                document.getElementById('event-title').innerText = title;
+                document.getElementById('event-title').innerText = event.title_th;
                 document.getElementById('event-date').innerText = event.date;
-                document.getElementById('event-loc').innerText = currentLang === 'th' ? event.location_th : (event.location_en || event.location_th);
-                document.getElementById('event-dist').innerText = event.distance || 'N/A';
-                document.getElementById('event-price').innerText = event.price || 'Free';
+                document.getElementById('event-loc').innerText = event.location_th;
+                document.getElementById('event-dist').innerText = event.distance || '-';
+                document.getElementById('event-price').innerText = event.price || '-';
 
                 document.getElementById('reg-event-id').value = event._id;
                 document.getElementById('reg-event-name').value = event.title_th;
+                
+                // Set Distance Options
+                if(event.distance) {
+                    const dists = event.distance.split(',').map(d => d.trim());
+                    document.getElementById('reg-dist-select').innerHTML = dists.map(d => `<option value="${d}">${d}</option>`).join('');
+                }
 
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('content').classList.remove('hidden');
-            } catch (err) {
-                document.getElementById('loading').innerHTML = `<span class="text-red-500">Error loading event</span>`;
-            }
+            } catch (err) { console.error(err); }
         }
 
         async function handleRegister(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
             const originalText = btn.innerText;
-            btn.innerText = 'Sending...';
+            btn.innerText = 'กำลังบันทึกข้อมูล...';
             btn.disabled = true;
 
             const formData = {
                 eventId: document.getElementById('reg-event-id').value,
                 eventName: document.getElementById('reg-event-name').value,
-                fullName: document.getElementById('reg-name').value,
-                bibName: document.getElementById('reg-bib').value,
+                firstName: document.getElementById('reg-fname').value,
+                lastName: document.getElementById('reg-lname').value,
+                nationalId: document.getElementById('reg-idcard').value,
+                birthDate: document.getElementById('reg-birth').value,
+                nationality: document.getElementById('reg-nation').value,
+                bloodType: document.getElementById('reg-blood').value,
                 gender: document.getElementById('reg-gender').value,
-                shirtSize: document.getElementById('reg-size').value,
-                distance: document.getElementById('reg-distance').value,
+
+                address: document.getElementById('reg-address').value,
+                province: document.getElementById('reg-province').value,
+                zipcode: document.getElementById('reg-zip').value,
                 phone: document.getElementById('reg-phone').value,
                 email: document.getElementById('reg-email').value,
+
+                emergencyName: document.getElementById('reg-em-name').value,
+                emergencyRelation: document.getElementById('reg-em-rel').value,
+                emergencyPhone: document.getElementById('reg-em-phone').value,
+                medicalCondition: document.getElementById('reg-med').value,
+
+                bibName: document.getElementById('reg-bib').value,
+                distance: document.getElementById('reg-dist-select').value,
+                shirtSize: document.getElementById('reg-size').value,
+                runningClub: document.getElementById('reg-club').value,
+                shippingMethod: document.getElementById('reg-ship').value,
+                
                 paymentStatus: 'pending'
             };
 
@@ -333,20 +233,17 @@
                 });
 
                 if (res.ok) {
-                    alert('🎉 สมัครสำเร็จ! (Registration Successful)');
+                    alert('🎉 สมัครสำเร็จ! ระบบบันทึกข้อมูลเรียบร้อยแล้ว');
                     window.location.href = 'index.html';
                 } else throw new Error();
             } catch (err) {
-                alert('Error submitting registration');
+                alert('เกิดข้อผิดพลาดในการสมัคร');
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            changeLanguage('th'); // เริ่มต้นภาษาไทย
-            init(); // โหลดข้อมูลงาน
-        });
+        init();
     </script>
 </body>
 </html>
