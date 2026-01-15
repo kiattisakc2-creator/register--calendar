@@ -77,8 +77,7 @@
 
                     <div class="mb-6">
                         <label class="block text-sm font-bold text-slate-700 mb-2">เลือกประเภทบัตร / ระยะทาง</label>
-                        <div id="ticket-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            </div>
+                        <div id="ticket-options" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
                         <input type="hidden" id="selected-ticket-idx">
                     </div>
 
@@ -148,7 +147,7 @@
     <style>
         .input-field { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.9rem; outline: none; transition: all 0.2s; }
         .input-field:focus { border-color: #0ea5e9; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1); }
-        .ticket-card { cursor: pointer; border: 2px solid #e2e8f0; padding: 1rem; rounded-xl: transition: all 0.2s; }
+        .ticket-card { cursor: pointer; border: 2px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; transition: all 0.2s; } /* แก้ rounded-xl: เป็น border-radius */
         .ticket-card.selected { border-color: #0ea5e9; background-color: #f0f9ff; }
         .ticket-card:hover { border-color: #cbd5e1; }
     </style>
@@ -159,7 +158,7 @@
         const eventId = urlParams.get('id');
         
         let currentEvent = null;
-        let cart = []; // ตะกร้าเก็บผู้สมัคร
+        let cart = [];
         
         async function init() {
             if (!eventId) { alert('ไม่พบรหัสกิจกรรม'); window.location.href = 'index.html'; return; }
@@ -167,13 +166,11 @@
                 const res = await fetch(`${API_URL}/${eventId}`);
                 currentEvent = await res.json();
 
-                // UI Basics
                 document.getElementById('event-img').src = currentEvent.image || 'https://via.placeholder.com/800x400';
                 document.getElementById('event-title').innerText = currentEvent.title_th;
                 document.getElementById('event-date').innerText = currentEvent.date;
                 document.getElementById('event-loc').innerText = currentEvent.location_th;
 
-                // Render Tickets
                 renderTicketOptions();
 
                 document.getElementById('loading').classList.add('hidden');
@@ -181,26 +178,21 @@
             } catch (err) { console.error(err); alert('Error loading event'); }
         }
 
-        // --- Logic 1: Render Tickets & Pricing ---
         function renderTicketOptions() {
             const container = document.getElementById('ticket-options');
             const today = new Date().toISOString().split('T')[0];
 
-            // เช็คว่าใช้ระบบใหม่ (tickets) หรือเก่า (distance string)
             let tickets = [];
             if (currentEvent.tickets && currentEvent.tickets.length > 0) {
                 tickets = currentEvent.tickets;
             } else {
-                // Fallback: แปลงข้อมูลเก่าให้เป็น format ใหม่
                 const dists = (currentEvent.distance || 'General').split(',');
-                tickets = dists.map(d => ({ name: d.trim(), price: parseInt(currentEvent.price) || 0 }));
+                tickets = dists.map(d => ({ name: d.trim(), price: parseInt(currentEvent.price) || 0 })); // แก้ Safety Int
             }
 
-            // เก็บใส่ตัวแปร global event ไว้ใช้ต่อ
             currentEvent.processedTickets = tickets;
 
             container.innerHTML = tickets.map((t, idx) => {
-                // คำนวณราคา (Check Early Bird)
                 let finalPrice = t.price;
                 let isEarlyBird = false;
                 if (t.earlyBirdPrice && t.earlyBirdDate && today <= t.earlyBirdDate) {
@@ -209,7 +201,7 @@
                 }
 
                 return `
-                <div class="ticket-card bg-white rounded-xl relative overflow-hidden group" onclick="selectTicket(${idx})">
+                <div class="ticket-card bg-white relative overflow-hidden group" onclick="selectTicket(${idx})">
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-lg text-slate-800">${t.name}</span>
                         ${isEarlyBird ? '<span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Early Bird 🔥</span>' : ''}
@@ -229,43 +221,36 @@
         }
 
         function selectTicket(idx) {
-            // UI Selection Logic
             document.querySelectorAll('.ticket-card').forEach(el => el.classList.remove('selected', 'border-brand-500'));
             document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
             
-            const cards = document.querySelectorAll('.ticket-card');
-            cards[idx].classList.add('selected');
-            document.getElementById(`check-${idx}`).classList.remove('hidden');
-
-            document.getElementById('selected-ticket-idx').value = idx;
+            // เลือก element ที่ idx ตรงกัน (เนื่องจาก class มันซ้ำกัน ต้องระวัง)
+            const cards = document.getElementById('ticket-options').children;
+            if(cards[idx]) {
+                cards[idx].classList.add('selected');
+                document.getElementById(`check-${idx}`).classList.remove('hidden');
+                document.getElementById('selected-ticket-idx').value = idx;
+            }
         }
 
-        // --- Logic 2: Cart System ---
         function addToCart(e) {
             e.preventDefault();
             const idx = document.getElementById('selected-ticket-idx').value;
             if (idx === "") { alert('กรุณาเลือกประเภทบัตรก่อน'); return; }
 
             const ticket = currentEvent.processedTickets[idx];
-            
-            // คำนวณราคาอีกรอบ (เผื่อข้ามวัน)
             const today = new Date().toISOString().split('T')[0];
             let price = ticket.price;
             if (ticket.earlyBirdPrice && ticket.earlyBirdDate && today <= ticket.earlyBirdDate) {
                 price = ticket.earlyBirdPrice;
             }
 
-            // สร้าง Object ผู้สมัคร
             const runner = {
-                tempId: Date.now(), // ID ชั่วคราวในตะกร้า
+                tempId: Date.now(),
                 eventId: currentEvent._id,
                 eventName: currentEvent.title_th,
-                
-                // Ticket Info
                 distance: ticket.name,
                 price: price,
-
-                // Form Data
                 firstName: document.getElementById('reg-fname').value,
                 lastName: document.getElementById('reg-lname').value,
                 nationalId: document.getElementById('reg-idcard').value,
@@ -273,36 +258,36 @@
                 nationality: document.getElementById('reg-nation').value,
                 bloodType: document.getElementById('reg-blood').value,
                 gender: document.getElementById('reg-gender').value,
-                
                 address: document.getElementById('reg-address').value,
                 province: document.getElementById('reg-province').value,
                 zipcode: document.getElementById('reg-zip').value,
                 phone: document.getElementById('reg-phone').value,
                 email: document.getElementById('reg-email').value,
-
                 emergencyName: document.getElementById('reg-em-name').value,
                 emergencyRelation: document.getElementById('reg-em-rel').value,
                 emergencyPhone: document.getElementById('reg-em-phone').value,
                 medicalCondition: document.getElementById('reg-med').value,
-
-                bibName: document.getElementById('reg-bib').value,
+                bibName: document.getElementById('reg-bib').value.toUpperCase(), // แก้ BIB Case
                 shirtSize: document.getElementById('reg-size').value,
                 shippingMethod: document.getElementById('reg-ship').value,
-                
                 paymentStatus: 'pending'
             };
 
             cart.push(runner);
             renderCart();
             
-            // Reset Form (บางช่อง) เพื่อให้กรอกคนต่อไปง่ายขึ้น
+            // Reset Form (Clear)
             document.getElementById('reg-fname').value = '';
             document.getElementById('reg-lname').value = '';
             document.getElementById('reg-idcard').value = '';
             document.getElementById('reg-bib').value = '';
-            // (ช่องที่อยู่ เบอร์โทร มักใช้ซ้ำกัน ไม่ต้องลบก็ได้ เพื่อความสะดวก)
             
-            alert('เพิ่มลงตะกร้าแล้ว! กรอกคนต่อไปได้เลย หรือกดยืนยันด้านซ้ายมือ');
+            // Reset Selection (ป้องกันการลืมเปลี่ยนระยะ)
+            document.getElementById('selected-ticket-idx').value = "";
+            document.querySelectorAll('.ticket-card').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
+
+            alert('✅ เพิ่มลงตะกร้าแล้ว! สามารถกรอกคนต่อไปได้เลย');
         }
 
         function renderCart() {
@@ -341,9 +326,8 @@
             renderCart();
         }
 
-        // --- Logic 3: Submit All ---
         async function submitAll() {
-            if (cart.length === 0) return;
+            if (cart.length === 0) { alert('ตะกร้าว่างเปล่า!'); return; } // แก้ Empty Check
             if (!confirm(`ยืนยันการสมัครทั้งหมด ${cart.length} ท่าน?`)) return;
 
             const btn = document.querySelector('#cart-panel button');
@@ -354,10 +338,8 @@
             try {
                 const regApiUrl = API_URL.replace('/events', '/registrations');
                 
-                // ส่งทีละคน (Loop) หรือส่งเป็น Array ถ้า Backend รองรับ Batch Create
-                // ในที่นี้ใช้ Loop ยิงทีละคนเพื่อให้ชัวร์กับ Backend เดิม
                 for (const runner of cart) {
-                    const { tempId, price, ...dataToSend } = runner; // ตัด field temp ออกก่อนส่ง
+                    const { tempId, price, ...dataToSend } = runner;
                     await fetch(regApiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
