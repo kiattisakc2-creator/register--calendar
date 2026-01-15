@@ -12,99 +12,120 @@
         body.modal-active { overflow: hidden; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
+<body class="bg-slate-100 font-sans text-slate-800">
 
     <div id="login-section" class="fixed inset-0 bg-slate-800 z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm p-8 rounded-2xl shadow-2xl text-center">
             <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center" placeholder="รหัสผ่าน (1234)">
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl">เข้าสู่ระบบ</button>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700">เข้าสู่ระบบ</button>
             </form>
         </div>
     </div>
 
-    <div id="dashboard-section" class="hidden p-6 md:p-10">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold">Admin Dashboard 🛠️</h1>
-                <div class="flex gap-3">
-                    <a href="../index.html" target="_blank" class="bg-white border px-4 py-2 rounded-lg hover:bg-slate-50 text-sm font-bold">เปิดหน้าเว็บ</a>
-                    <button onclick="logout()" class="bg-red-50 text-red-600 border border-red-100 px-4 py-2 rounded-lg hover:bg-red-100 text-sm font-bold">Logout</button>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow border border-slate-200 overflow-x-auto">
-                <table class="w-full text-left border-collapse whitespace-nowrap">
-                    <thead class="bg-slate-800 text-white">
-                        <tr>
-                            <th class="p-4">วันที่</th>
-                            <th class="p-4">ชื่องาน</th>
-                            <th class="p-4">สถานะ</th>
-                            <th class="p-4 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="event-table-body">
-                        <tr><td colspan="4" class="p-10 text-center text-slate-400">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="edit-modal" class="fixed inset-0 z-40 hidden">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEditModal()"></div>
+    <div id="dashboard-section" class="hidden flex h-screen overflow-hidden">
         
-        <div class="relative bg-white w-full max-w-lg mx-auto mt-20 rounded-xl shadow-2xl p-6 z-50 animate-bounce-in">
-            <h3 class="text-xl font-bold mb-4 text-slate-800">แก้ไขข้อมูลงานวิ่ง ✏️</h3>
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
+            <div class="p-6 text-center border-b border-slate-700">
+                <h1 class="text-2xl font-bold text-blue-400">Admin Panel</h1>
+                <p class="text-xs text-slate-400 mt-1">Action.in.th Backend</p>
+            </div>
             
-            <form onsubmit="handleEditSubmit(event)" class="space-y-4">
-                <input type="hidden" id="edit-id"> <div>
-                    <label class="block text-sm font-bold mb-1">ชื่องาน (TH)</label>
-                    <input type="text" id="edit-title" class="w-full border p-2 rounded-lg" required>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold mb-1">วันที่</label>
-                        <input type="date" id="edit-date" class="w-full border p-2 rounded-lg" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-1">จังหวัด</label>
-                        <select id="edit-province" class="w-full border p-2 rounded-lg">
-                            <option value="Bangkok">Bangkok</option>
-                            <option value="Chiang Mai">Chiang Mai</option>
-                            <option value="Phuket">Phuket</option>
-                            <option value="Chonburi">Chonburi</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">ผู้ติดต่อ</label>
-                    <input type="text" id="edit-submitter" class="w-full border p-2 rounded-lg">
-                </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">
+                    <span>📊</span> ภาพรวม (Dashboard)
+                </button>
+                <button onclick="switchTab('requests')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-requests">
+                    <span>📩</span> คำขอฝากงาน <span id="badge-pending" class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+                </button>
+                <button onclick="switchTab('events')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-events">
+                    <span>📅</span> จัดการปฏิทินทั้งหมด
+                </button>
+            </nav>
 
-                <div class="flex justify-end gap-2 pt-4 border-t mt-4">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">ยกเลิก</button>
-                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">บันทึกการแก้ไข</button>
+            <div class="p-4 border-t border-slate-700">
+                <a href="../index.html" target="_blank" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4 pl-2">
+                    <span>🔗</span> ไปหน้าเว็บจริง
+                </a>
+                <button onclick="logout()" class="w-full bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-2 rounded-lg text-sm font-bold transition">
+                    ออกจากระบบ
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-8 relative">
+            
+            <div id="view-dashboard" class="content-view">
+                <h2 class="text-2xl font-bold mb-6">ภาพรวมระบบ 📈</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm mb-1">งานวิ่งทั้งหมด</div>
+                        <div class="text-3xl font-bold text-blue-600" id="stat-total">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm mb-1">รอตรวจสอบ</div>
+                        <div class="text-3xl font-bold text-yellow-500" id="stat-pending">0</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm mb-1">ออนไลน์แล้ว</div>
+                        <div class="text-3xl font-bold text-green-500" id="stat-active">0</div>
+                    </div>
                 </div>
-            </form>
-        </div>
+            </div>
+
+            <div id="view-requests" class="content-view hidden">
+                <h2 class="text-2xl font-bold mb-6">คำขอฝากงานใหม่ (Pending) 📩</h2>
+                <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+                            <tr>
+                                <th class="p-4">วันที่จัด</th>
+                                <th class="p-4">ชื่องาน</th>
+                                <th class="p-4">ผู้ฝาก</th>
+                                <th class="p-4 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-requests">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-events" class="content-view hidden">
+                <h2 class="text-2xl font-bold mb-6">จัดการปฏิทินทั้งหมด 📅</h2>
+                <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+                            <tr>
+                                <th class="p-4">วันที่จัด</th>
+                                <th class="p-4">ชื่องาน</th>
+                                <th class="p-4">สถานะ</th>
+                                <th class="p-4 text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-all">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <script src="../js/data.js"></script>
     <script>
         const ADMIN_PASS = "1234";
+        let allEvents = []; // ตัวแปรเก็บข้อมูลกลาง
 
-        // --- AUTH SYSTEM ---
+        // --- AUTH & INIT ---
         function checkAuth() {
-            const isAuth = sessionStorage.getItem("isAdmin") === "true";
-            if (isAuth) {
+            if (sessionStorage.getItem("isAdmin") === "true") {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
-                fetchAdminEvents();
+                fetchData(); // โหลดข้อมูลทันทีที่เข้า
             } else {
                 document.getElementById('login-section').classList.remove('hidden');
-                document.getElementById('dashboard-section').classList.add('hidden');
             }
         }
         function handleLogin(e) {
@@ -119,104 +140,87 @@
             window.location.reload();
         }
 
-        // --- DATA FETCHING ---
-        async function fetchAdminEvents() {
+        // --- CORE FUNCTIONS ---
+        async function fetchData() {
             try {
                 const res = await fetch(API_URL);
-                const data = await res.json();
-                renderTable(data);
+                allEvents = await res.json();
+                renderAll(); // วาดทุกหน้า
             } catch (err) { console.error(err); }
         }
 
-        function renderTable(events) {
-            const tbody = document.getElementById('event-table-body');
-            if(!events.length) { tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center">ไม่มีข้อมูล</td></tr>'; return; }
+        function renderAll() {
+            // 1. อัปเดตตัวเลข Dashboard
+            const pendingCount = allEvents.filter(e => e.status === 'pending').length;
+            const activeCount = allEvents.filter(e => e.status === 'open').length;
+            
+            document.getElementById('stat-total').innerText = allEvents.length;
+            document.getElementById('stat-pending').innerText = pendingCount;
+            document.getElementById('stat-active').innerText = activeCount;
 
-            tbody.innerHTML = events.map(e => `
+            // 2. อัปเดต Badge สีแดงที่เมนู
+            const badge = document.getElementById('badge-pending');
+            if(pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // 3. วาดตาราง "คำขอใหม่" (Pending Only)
+            const requestRows = allEvents.filter(e => e.status === 'pending').map(e => `
                 <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 text-sm">${e.date}</td>
-                    <td class="p-4 font-bold text-slate-700">${e.title_th}</td>
-                    <td class="p-4">
-                        <span class="px-2 py-1 rounded text-xs font-bold border ${e.status==='open'?'bg-green-50 text-green-700 border-green-200':'bg-red-50 text-red-700 border-red-200'}">
-                            ${e.status||'open'}
-                        </span>
-                    </td>
-                    <td class="p-4 text-center flex justify-center gap-1">
-                        <button onclick='openEditModal(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-xs hover:bg-yellow-200 font-bold">แก้ไข</button>
-                        
-                        ${e.status!=='open' 
-                            ? `<button onclick="updateStatus('${e._id}','open')" class="bg-green-100 text-green-700 px-3 py-1 rounded text-xs hover:bg-green-200 font-bold">เปิดรับ</button>` 
-                            : `<button onclick="updateStatus('${e._id}','closed')" class="bg-slate-100 text-slate-600 px-3 py-1 rounded text-xs hover:bg-slate-200 font-bold">ปิดรับ</button>`
-                        }
-                        <button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded text-xs hover:bg-red-200 font-bold">ลบ</button>
+                    <td class="p-4">${e.date}</td>
+                    <td class="p-4 font-bold">${e.title_th}</td>
+                    <td class="p-4 text-sm text-slate-500">${e.submitter}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="updateStatus('${e._id}', 'open')" class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600">อนุมัติ</button>
+                        <button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-3 py-1 rounded text-xs hover:bg-red-200">ลบ</button>
                     </td>
                 </tr>
             `).join('');
+            document.getElementById('table-requests').innerHTML = requestRows || '<tr><td colspan="4" class="p-8 text-center text-slate-400">ไม่มีคำขอใหม่</td></tr>';
+
+            // 4. วาดตาราง "งานทั้งหมด"
+            const allRows = allEvents.map(e => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-4">${e.date}</td>
+                    <td class="p-4 font-bold text-slate-700">${e.title_th}</td>
+                    <td class="p-4"><span class="text-xs px-2 py-1 rounded border ${e.status==='open'?'bg-green-50 border-green-200 text-green-700':'bg-yellow-50 border-yellow-200 text-yellow-700'}">${e.status}</span></td>
+                    <td class="p-4 text-center">
+                        <button onclick="deleteEvent('${e._id}')" class="text-red-400 hover:text-red-600 text-sm underline">ลบ</button>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('table-all').innerHTML = allRows;
         }
 
-        // --- EDIT LOGIC (ส่วนใหม่) ---
-        function openEditModal(eventData) {
-            // เอาข้อมูลเดิมมาใส่ในช่อง Input
-            document.getElementById('edit-id').value = eventData._id;
-            document.getElementById('edit-title').value = eventData.title_th;
-            document.getElementById('edit-date').value = eventData.date;
-            document.getElementById('edit-province').value = eventData.location_th || 'Bangkok';
-            document.getElementById('edit-submitter').value = eventData.submitter || '';
-
-            document.getElementById('edit-modal').classList.remove('hidden');
-        }
-
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.add('hidden');
-        }
-
-        async function handleEditSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
+        // --- NAVIGATION ---
+        function switchTab(tabName) {
+            // ซ่อนทุกหน้า
+            document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-slate-800', 'text-white'));
             
-            // เตรียมข้อมูลใหม่
-            const updateData = {
-                title_th: document.getElementById('edit-title').value,
-                title_en: document.getElementById('edit-title').value, // อัปเดตอังกฤษด้วย
-                date: document.getElementById('edit-date').value,
-                location_th: document.getElementById('edit-province').value,
-                location_en: document.getElementById('edit-province').value,
-                submitter: document.getElementById('edit-submitter').value
-            };
-
-            try {
-                // ส่งไป Backend (PATCH)
-                const res = await fetch(`${API_URL}/${id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if(res.ok) {
-                    alert('แก้ไขเรียบร้อย!');
-                    closeEditModal();
-                    fetchAdminEvents(); // โหลดตารางใหม่
-                } else {
-                    alert('เกิดข้อผิดพลาด');
-                }
-            } catch(err) { alert('Server Error'); }
+            // โชว์หน้าที้เลือก
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabName}`).classList.add('bg-slate-800', 'text-white');
         }
 
         // --- ACTIONS ---
         async function updateStatus(id, st) {
-            if(confirm('เปลี่ยนสถานะ?')) {
-                await fetch(`${API_URL}/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status:st}) });
-                fetchAdminEvents();
-            }
+            if(!confirm('ยืนยันอนุมัติ?')) return;
+            await fetch(`${API_URL}/${id}`, { method: 'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({status:st})});
+            fetchData();
         }
         async function deleteEvent(id) {
-            if(confirm('ลบจริงนะ?')) {
-                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-                fetchAdminEvents();
-            }
+            if(!confirm('ลบถาวร?')) return;
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchData();
         }
 
+        // Init
         checkAuth();
+        switchTab('dashboard'); // เริ่มที่หน้า Dashboard
     </script>
-</body>
+</body></body>
 </html>
