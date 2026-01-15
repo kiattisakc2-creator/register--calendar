@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายละเอียดงานวิ่ง - Action.in.th</title>
+    <title>ลงทะเบียน - Action.in.th</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,218 +12,238 @@
                 extend: {
                     fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
-                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 900: '#14532d' }, // Theme สีเขียว Action
+                        slate: { 850: '#1e293b' }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #f8fafc; }
-        .input-field { width: 100%; padding: 0.75rem; background-color: #f9fafb; border: 1px solid #e2e8f0; border-radius: 0.75rem; font-size: 0.95rem; outline: none; transition: all 0.2s; }
-        .input-field:focus { background-color: #fff; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+        body { background-color: #f1f5f9; }
+        .input-field {
+            width: 100%; padding: 0.8rem 1rem; 
+            border: 1px solid #cbd5e1; border-radius: 0.5rem; 
+            background-color: #fff; font-size: 1rem; transition: all 0.2s;
+        }
+        .input-field:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1); outline: none; }
         
-        /* Ticket Card Styling */
-        .ticket-card { cursor: pointer; border: 2px solid transparent; background: white; padding: 1.25rem; border-radius: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: all 0.2s; position: relative; overflow: hidden; }
-        .ticket-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #e2e8f0; }
-        .ticket-card.selected { border-color: #0ea5e9; background-color: #f0f9ff; ring: 2px solid #0ea5e9; }
+        /* Ticket Selection Style */
+        .ticket-card {
+            border: 2px solid #e2e8f0; background: white; 
+            border-radius: 1rem; padding: 1.5rem; cursor: pointer; 
+            transition: all 0.2s; position: relative;
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 120px;
+        }
+        .ticket-card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
         
-        /* Form Section */
-        .form-section { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; }
-        .section-header { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 1.25rem; display: flex; items-center; gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9; }
+        /* Selected State */
+        .ticket-card.selected {
+            border-color: #22c55e; background-color: #f0fdf4;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1);
+        }
+        .ticket-card.selected .check-icon { display: block; }
+        
+        /* Sticky Bottom on Mobile */
+        @media (max-width: 1024px) {
+            .cart-desktop { display: none; }
+            .cart-mobile { display: flex; }
+        }
+        @media (min-width: 1024px) {
+            .cart-desktop { display: block; }
+            .cart-mobile { display: none; }
+        }
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen">
+<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen pb-24 lg:pb-0">
 
-    <nav class="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-3 font-bold text-xl text-slate-800">
-                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md">A</div>
-                    Action.in.th
-                </a>
-                <a href="index.html" class="text-slate-500 hover:text-brand-600 font-medium text-sm transition">← กลับหน้าหลัก</a>
-            </div>
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 h-16 flex items-center shadow-sm">
+        <div class="w-full max-w-[1600px] mx-auto px-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 font-bold text-xl text-slate-800 hover:text-brand-600 transition">
+                <span class="bg-brand-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">A</span>
+                Action.in.th
+            </a>
+            <a href="index.html" class="text-sm font-medium text-slate-500 hover:text-slate-800">✕ ยกเลิก</a>
         </div>
     </nav>
 
-    <div id="loading" class="flex justify-center items-center h-screen fixed inset-0 z-40 bg-white">
-        <div class="animate-pulse flex flex-col items-center">
-            <div class="w-12 h-12 bg-slate-200 rounded-full mb-4"></div>
-            <div class="h-4 w-32 bg-slate-200 rounded"></div>
-        </div>
+    <div id="loading" class="fixed inset-0 bg-white z-40 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-400">Loading Event...</p>
     </div>
 
-    <main id="content" class="hidden pb-20">
+    <main id="content" class="hidden w-full max-w-[1600px] mx-auto px-4 py-6 lg:py-10">
         
-        <div class="relative w-full h-[350px] md:h-[450px] lg:h-[500px] overflow-hidden group">
-            <img id="event-img" src="" class="w-full h-full object-cover transition duration-700 group-hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
+        <header class="mb-8 flex flex-col md:flex-row gap-6 items-start md:items-end border-b border-slate-200 pb-6">
+            <div class="w-full md:w-auto shrink-0">
+                <img id="event-img" src="" class="w-full md:w-48 h-32 object-cover rounded-xl shadow-sm border border-slate-200 bg-slate-100">
+            </div>
+            <div class="flex-grow">
+                <h1 id="event-title" class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Event Title</h1>
+                <div class="flex flex-wrap gap-4 text-sm text-slate-600">
+                    <span class="flex items-center gap-1">📅 <b id="event-date">-</b></span>
+                    <span class="flex items-center gap-1">📍 <b id="event-loc">-</b></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 text-white">
-                <div class="max-w-7xl mx-auto">
-                    <span class="bg-brand-500/20 border border-brand-400/30 text-brand-100 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md mb-4 inline-block">Official Event</span>
-                    <h1 id="event-title" class="text-3xl md:text-5xl font-bold mb-4 leading-tight shadow-sm">Event Title</h1>
-                    <div class="flex flex-wrap gap-6 text-sm md:text-base text-slate-200 font-medium">
-                        <div class="flex items-center gap-2"><span class="text-xl">📅</span> <span id="event-date">-</span></div>
-                        <div class="flex items-center gap-2"><span class="text-xl">📍</span> <span id="event-loc">-</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8 space-y-8">
                 
-                <div class="lg:col-span-8 space-y-8">
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-3 text-slate-800">
+                        <span class="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                        เลือกระยะทาง / ประเภทบัตร
+                    </h2>
                     
-                    <section>
-                        <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm">1</span>
-                            เลือกประเภทบัตร (Select Ticket)
+                    <div id="ticket-options" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                        </div>
+                    <input type="hidden" id="selected-ticket-idx">
+                    <p class="text-xs text-red-500 mt-2 hidden" id="ticket-error">* กรุณาเลือกระยะทางก่อน</p>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold flex items-center gap-3 text-slate-800">
+                            <span class="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+                            ข้อมูลผู้สมัคร
                         </h2>
-                        <div id="ticket-options" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            </div>
-                        <input type="hidden" id="selected-ticket-idx">
-                    </section>
+                        <button type="button" onclick="resetForm()" class="text-sm text-slate-400 hover:text-red-500 underline">ล้างฟอร์ม</button>
+                    </div>
 
-                    <section>
-                        <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm">2</span>
-                            กรอกข้อมูลผู้สมัคร (Registration Data)
-                        </h2>
+                    <form id="runner-form" onsubmit="addToCart(event)" class="space-y-6">
                         
-                        <form id="runner-form" onsubmit="addToCart(event)">
-                            
-                            <div class="form-section shadow-soft">
-                                <div class="section-header text-brand-600">👤 ข้อมูลส่วนตัว (Personal)</div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" id="reg-fname" placeholder="ชื่อจริง (First Name)" class="input-field" required>
-                                    <input type="text" id="reg-lname" placeholder="นามสกุล (Last Name)" class="input-field" required>
-                                    <input type="text" id="reg-idcard" placeholder="เลขบัตร ปชช. / Passport" class="input-field md:col-span-2" required>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div><label class="text-xs text-slate-500 ml-1 mb-1 block">วันเกิด</label><input type="date" id="reg-birth" class="input-field" required></div>
-                                        <div><label class="text-xs text-slate-500 ml-1 mb-1 block">เพศ</label><select id="reg-gender" class="input-field"><option value="Male">ชาย (Male)</option><option value="Female">หญิง (Female)</option></select></div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div><label class="text-xs text-slate-500 ml-1 mb-1 block">สัญชาติ</label><input type="text" id="reg-nation" value="Thai" class="input-field"></div>
-                                        <div><label class="text-xs text-slate-500 ml-1 mb-1 block">หมู่เลือด</label><select id="reg-blood" class="input-field"><option value="">ระบุ...</option><option value="A">A</option><option value="B">B</option><option value="O">O</option><option value="AB">AB</option></select></div>
-                                    </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 border-b pb-2 mb-4">👤 ข้อมูลส่วนตัว</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="block text-sm mb-1 text-slate-500">ชื่อจริง (First Name)</label><input type="text" id="reg-fname" class="input-field" required></div>
+                                <div><label class="block text-sm mb-1 text-slate-500">นามสกุล (Last Name)</label><input type="text" id="reg-lname" class="input-field" required></div>
+                                <div class="md:col-span-2"><label class="block text-sm mb-1 text-slate-500">เลขบัตรประชาชน / Passport ID</label><input type="text" id="reg-idcard" class="input-field" required></div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-sm mb-1 text-slate-500">วันเกิด</label><input type="date" id="reg-birth" class="input-field" required></div>
+                                    <div><label class="block text-sm mb-1 text-slate-500">เพศ</label><select id="reg-gender" class="input-field"><option value="Male">ชาย</option><option value="Female">หญิง</option></select></div>
                                 </div>
-                            </div>
-
-                            <div class="form-section shadow-soft">
-                                <div class="section-header text-brand-600">🏠 ที่อยู่ & ติดต่อ (Contact)</div>
-                                <div class="space-y-4">
-                                    <input type="text" id="reg-address" placeholder="ที่อยู่จัดส่ง (Address)" class="input-field">
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <input type="text" id="reg-province" placeholder="จังหวัด" class="input-field">
-                                        <input type="text" id="reg-zip" placeholder="รหัส ปณ." class="input-field">
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์ (Phone)" class="input-field" required>
-                                        <input type="email" id="reg-email" placeholder="อีเมล (Email)" class="input-field" required>
-                                    </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-sm mb-1 text-slate-500">สัญชาติ</label><input type="text" id="reg-nation" value="Thai" class="input-field"></div>
+                                    <div><label class="block text-sm mb-1 text-slate-500">หมู่เลือด</label><select id="reg-blood" class="input-field"><option value="">ระบุ...</option><option value="A">A</option><option value="B">B</option><option value="O">O</option><option value="AB">AB</option></select></div>
                                 </div>
-                            </div>
-
-                            <div class="form-section shadow-soft">
-                                <div class="section-header text-brand-600">🏃 ข้อมูลการแข่ง (Race & Medical)</div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div><label class="text-xs text-slate-500 ml-1 mb-1 block">ชื่อบน BIB (ENG)</label><input type="text" id="reg-bib" class="input-field uppercase" maxlength="10" required></div>
-                                    <div><label class="text-xs text-slate-500 ml-1 mb-1 block">ไซส์เสื้อ</label><select id="reg-size" class="input-field"><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option></select></div>
-                                    <div class="md:col-span-2"><label class="text-xs text-slate-500 ml-1 mb-1 block">การรับของ (Race Pack)</label><select id="reg-ship" class="input-field"><option value="pickup">รับเองหน้างาน (Self Pickup)</option><option value="post">ส่งไปรษณีย์ (+50บ.)</option></select></div>
-                                    
-                                    <div class="md:col-span-2 border-t pt-4 mt-2">
-                                        <label class="text-xs font-bold text-red-500 ml-1 mb-2 block">ผู้ติดต่อฉุกเฉิน (Emergency)</label>
-                                        <div class="grid grid-cols-2 gap-3 mb-3">
-                                            <input type="text" id="reg-em-name" placeholder="ชื่อผู้ติดต่อ" class="input-field" required>
-                                            <input type="tel" id="reg-em-phone" placeholder="เบอร์โทรฉุกเฉิน" class="input-field" required>
-                                        </div>
-                                        <input type="text" id="reg-med" placeholder="โรคประจำตัว/แพ้ยา (ถ้าไม่มีใส่ -)" class="input-field" value="-">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="w-full py-4 bg-slate-900 hover:bg-black text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 flex items-center justify-center gap-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                <span>เพิ่มผู้สมัครลงตะกร้า (Add to Cart)</span>
-                            </button>
-
-                        </form>
-                    </section>
-                </div>
-
-                <div class="lg:col-span-4">
-                    <div class="sticky top-24 space-y-6">
-                        
-                        <div id="cart-panel" class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden hidden animate-fade-in-up">
-                            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
-                                <h3 class="font-bold flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                    รายการสมัคร
-                                </h3>
-                                <span id="cart-count" class="bg-brand-500 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
-                            </div>
-                            
-                            <div class="p-4 bg-slate-50">
-                                <div id="cart-items" class="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                                    </div>
-                            </div>
-
-                            <div class="p-5 border-t border-slate-200 bg-white">
-                                <div class="flex justify-between items-end mb-4">
-                                    <span class="text-sm text-slate-500">ยอดรวมทั้งสิ้น</span>
-                                    <span class="text-2xl font-bold text-brand-600" id="cart-total">0 ฿</span>
-                                </div>
-                                <button onclick="submitAll()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-brand-500/30 transition duration-300">
-                                    ยืนยันและชำระเงิน
-                                </button>
                             </div>
                         </div>
 
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-800">
-                            <h4 class="font-bold mb-1">💡 Tips</h4>
-                            <p>ท่านสามารถเพิ่มเพื่อนลงในตะกร้าเพื่อสมัครพร้อมกันและชำระเงินทีเดียวได้</p>
+                        <div>
+                            <h3 class="font-bold text-slate-900 border-b pb-2 mb-4">🏠 การจัดส่ง & ติดต่อ</h3>
+                            <div class="space-y-4">
+                                <div><label class="block text-sm mb-1 text-slate-500">ที่อยู่จัดส่งเสื้อ/BIB</label><input type="text" id="reg-address" class="input-field"></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" id="reg-province" placeholder="จังหวัด" class="input-field">
+                                    <input type="text" id="reg-zip" placeholder="รหัสไปรษณีย์" class="input-field">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="tel" id="reg-phone" placeholder="เบอร์โทรศัพท์" class="input-field" required>
+                                    <input type="email" id="reg-email" placeholder="อีเมล" class="input-field" required>
+                                </div>
+                            </div>
                         </div>
 
+                        <div>
+                            <h3 class="font-bold text-slate-900 border-b pb-2 mb-4">🏃 ข้อมูลการแข่งขัน</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="block text-sm mb-1 text-slate-500">ชื่อบน BIB (ENG)</label><input type="text" id="reg-bib" class="input-field uppercase" maxlength="10" required placeholder="MAX 10 CHARS"></div>
+                                <div><label class="block text-sm mb-1 text-slate-500">ไซส์เสื้อ</label><select id="reg-size" class="input-field"><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option></select></div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm mb-1 text-slate-500">วิธีการรับของ</label>
+                                    <select id="reg-ship" class="input-field">
+                                        <option value="pickup">รับเองหน้างาน (Self Pickup)</option>
+                                        <option value="post">ส่งไปรษณีย์ (Delivery +50฿)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-4 bg-red-50 rounded-xl border border-red-100">
+                                <label class="block text-sm font-bold text-red-700 mb-2">🚑 ผู้ติดต่อฉุกเฉิน (Emergency Contact)</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" id="reg-em-name" placeholder="ชื่อผู้ติดต่อ" class="input-field bg-white" required>
+                                    <input type="tel" id="reg-em-phone" placeholder="เบอร์โทรฉุกเฉิน" class="input-field bg-white" required>
+                                </div>
+                                <input type="text" id="reg-med" placeholder="โรคประจำตัว / ยาที่แพ้ (ระบุ - ถ้าไม่มี)" class="input-field mt-3 bg-white" value="-">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-slate-900 hover:bg-black text-white text-lg font-bold rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <span>+ เพิ่มผู้สมัครลงตะกร้า</span>
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <div class="lg:col-span-4 cart-desktop sticky top-24">
+                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                        <h3 class="font-bold text-lg">🛒 รายการสมัคร</h3>
+                        <span id="cart-count" class="bg-brand-500 px-2 py-1 rounded-md text-xs font-bold">0 คน</span>
+                    </div>
+                    
+                    <div id="cart-empty" class="p-8 text-center text-slate-400 text-sm">ยังไม่มีรายการ<br>กรุณาเพิ่มผู้สมัคร</div>
+                    <div id="cart-items" class="max-h-[400px] overflow-y-auto p-4 space-y-3 hidden custom-scrollbar"></div>
+
+                    <div class="p-5 border-t border-slate-200 bg-slate-50">
+                        <div class="flex justify-between items-end mb-4">
+                            <span class="text-slate-500">ยอดรวมสุทธิ</span>
+                            <span class="text-3xl font-bold text-slate-800" id="cart-total">0 ฿</span>
+                        </div>
+                        <button onclick="submitAll()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow transition">
+                            ยืนยันและชำระเงิน
+                        </button>
                     </div>
                 </div>
-
             </div>
+
         </div>
     </main>
+
+    <div class="cart-mobile fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50 p-4 justify-between items-center">
+        <div>
+            <div class="text-xs text-slate-500">ยอดรวม (<span id="mob-count">0</span> คน)</div>
+            <div class="text-xl font-bold text-brand-600" id="mob-total">0 ฿</div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="document.getElementById('content').scrollIntoView({behavior:'smooth'})" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-bold text-slate-600">เพิ่มอีก</button>
+            <button onclick="submitAll()" class="px-6 py-2 bg-brand-600 text-white rounded-lg text-sm font-bold shadow hover:bg-brand-700">ชำระเงิน</button>
+        </div>
+    </div>
 
     <script src="js/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
         let currentEvent = null, cart = [];
-        
+
         async function init() {
             if (!eventId) { alert('ไม่พบรหัสกิจกรรม'); window.location.href = 'index.html'; return; }
             try {
                 const res = await fetch(`${API_URL}/${eventId}`);
                 currentEvent = await res.json();
 
-                // Bind Data
                 document.getElementById('event-img').src = currentEvent.image || 'https://via.placeholder.com/1200x600';
                 document.getElementById('event-title').innerText = currentEvent.title_th;
                 document.getElementById('event-date').innerText = currentEvent.date;
                 document.getElementById('event-loc').innerText = currentEvent.location_th;
 
-                renderTicketOptions();
+                renderTickets();
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('content').classList.remove('hidden');
             } catch (err) { console.error(err); alert('Error loading event'); }
         }
 
-        function renderTicketOptions() {
+        function renderTickets() {
             const container = document.getElementById('ticket-options');
             const today = new Date().toISOString().split('T')[0];
+            
+            // Handle Old vs New Schema
             let tickets = currentEvent.tickets?.length > 0 ? currentEvent.tickets : (currentEvent.distance || 'General').split(',').map(d => ({ name: d.trim(), price: parseInt(currentEvent.price) || 0 }));
             currentEvent.processedTickets = tickets;
 
@@ -233,38 +253,51 @@
                 if (isEarly) finalPrice = t.earlyBirdPrice;
 
                 return `
-                <div class="ticket-card" onclick="selectTicket(${idx})" id="ticket-card-${idx}">
-                    <div class="flex justify-between items-start mb-2">
+                <div onclick="selectTicket(${idx})" id="ticket-${idx}" class="ticket-card relative">
+                    <div class="flex flex-col justify-between h-full">
                         <div>
-                            <div class="font-bold text-lg text-slate-800">${t.name}</div>
-                            ${isEarly ? '<span class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded mt-1">🔥 Early Bird</span>' : ''}
+                            <h3 class="font-bold text-xl text-slate-800 mb-1">${t.name}</h3>
+                            ${isEarly ? '<span class="inline-block bg-red-100 text-red-600 text-[10px] px-2 py-0.5 rounded font-bold">🔥 Early Bird</span>' : ''}
                         </div>
-                        <div id="check-${idx}" class="hidden text-brand-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg></div>
+                        <div class="mt-4 pt-4 border-t border-dashed border-slate-200">
+                            <div class="text-right">
+                                ${isEarly ? `<span class="text-sm text-slate-400 line-through mr-1">${t.price.toLocaleString()}</span>` : ''}
+                                <span class="text-2xl font-bold text-brand-600">${finalPrice.toLocaleString()}</span> <span class="text-xs text-slate-500">บาท</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-end gap-2">
-                        <span class="text-2xl font-bold text-brand-600">${finalPrice.toLocaleString()} ฿</span>
-                        ${isEarly ? `<span class="text-sm text-slate-400 line-through mb-1">${t.price.toLocaleString()}</span>` : ''}
+                    <div class="check-icon hidden absolute top-3 right-3 bg-brand-500 text-white rounded-full p-1 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                </div>`;
+                </div>
+                `;
             }).join('');
         }
 
         function selectTicket(idx) {
-            document.querySelectorAll('.ticket-card').forEach(el => el.classList.remove('selected'));
-            document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.ticket-card').forEach(el => {
+                el.classList.remove('selected', 'ring-2', 'ring-brand-500');
+                el.querySelector('.check-icon').classList.add('hidden');
+            });
             
-            const card = document.getElementById(`ticket-card-${idx}`);
+            const card = document.getElementById(`ticket-${idx}`);
             if(card) {
-                card.classList.add('selected');
-                document.getElementById(`check-${idx}`).classList.remove('hidden');
+                card.classList.add('selected', 'ring-2', 'ring-brand-500');
+                card.querySelector('.check-icon').classList.remove('hidden');
                 document.getElementById('selected-ticket-idx').value = idx;
+                document.getElementById('ticket-error').classList.add('hidden');
             }
         }
 
         function addToCart(e) {
             e.preventDefault();
             const idx = document.getElementById('selected-ticket-idx').value;
-            if (idx === "") { alert('กรุณาเลือกประเภทบัตรก่อน (Please select a ticket)'); return; }
+            
+            if (idx === "") { 
+                document.getElementById('ticket-error').classList.remove('hidden');
+                document.getElementById('ticket-options').scrollIntoView({behavior: 'smooth', block: 'center'});
+                return; 
+            }
 
             const ticket = currentEvent.processedTickets[idx];
             const today = new Date().toISOString().split('T')[0];
@@ -301,54 +334,66 @@
 
             cart.push(runner);
             renderCart();
-            
-            // Clear crucial fields
-            ['reg-fname','reg-lname','reg-idcard','reg-bib'].forEach(id => document.getElementById(id).value = '');
-            
-            // Reset Selection
-            document.getElementById('selected-ticket-idx').value = "";
-            document.querySelectorAll('.ticket-card').forEach(el => el.classList.remove('selected'));
-            document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
+            resetForm();
+            alert('✅ เพิ่มลงตะกร้าแล้ว! (Added to Cart)');
+        }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
-            alert('✅ เพิ่มลงตะกร้าแล้ว!');
+        function resetForm() {
+            // Keep common fields (Address, Contact) for convenience
+            ['reg-fname', 'reg-lname', 'reg-idcard', 'reg-bib'].forEach(id => document.getElementById(id).value = '');
+            // Deselect Ticket
+            document.getElementById('selected-ticket-idx').value = "";
+            document.querySelectorAll('.ticket-card').forEach(el => {
+                el.classList.remove('selected', 'ring-2', 'ring-brand-500');
+                el.querySelector('.check-icon').classList.add('hidden');
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function renderCart() {
-            const panel = document.getElementById('cart-panel');
-            if (cart.length > 0) panel.classList.remove('hidden');
-            else panel.classList.add('hidden');
+            const emptyMsg = document.getElementById('cart-empty');
+            const itemsDiv = document.getElementById('cart-items');
+            
+            if (cart.length > 0) {
+                emptyMsg.classList.add('hidden');
+                itemsDiv.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.remove('hidden');
+                itemsDiv.classList.add('hidden');
+            }
 
-            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('cart-count').innerText = cart.length + ' คน';
+            document.getElementById('mob-count').innerText = cart.length;
             
             let total = 0;
-            document.getElementById('cart-items').innerHTML = cart.map((r, i) => {
+            itemsDiv.innerHTML = cart.map((r, i) => {
                 total += r.price;
                 return `
-                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex justify-between items-start">
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-between group">
                     <div>
-                        <div class="font-bold text-slate-800 text-sm">${r.firstName}</div>
-                        <div class="text-xs text-slate-500 mt-1">${r.distance} • Size ${r.shirtSize}</div>
+                        <div class="font-bold text-sm text-slate-800">${r.firstName}</div>
+                        <div class="text-xs text-slate-500">${r.distance} | BIB: ${r.bibName}</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-brand-600 font-bold text-sm">${r.price.toLocaleString()}</div>
-                        <button onclick="removeRunner(${i})" class="text-[10px] text-red-400 hover:text-red-600 underline mt-1">ลบออก</button>
+                        <div class="font-bold text-brand-600 text-sm">${r.price.toLocaleString()}</div>
+                        <button onclick="removeRunner(${i})" class="text-[10px] text-red-400 hover:text-red-600 underline">ลบ</button>
                     </div>
                 </div>`;
             }).join('');
-            document.getElementById('cart-total').innerText = total.toLocaleString() + ' ฿';
+            
+            const totalStr = total.toLocaleString() + ' ฿';
+            document.getElementById('cart-total').innerText = totalStr;
+            document.getElementById('mob-total').innerText = totalStr;
         }
 
         function removeRunner(index) { cart.splice(index, 1); renderCart(); }
 
         async function submitAll() {
-            if (cart.length === 0) return;
-            if (!confirm(`ยืนยันการสมัคร ${cart.length} ท่าน?`)) return;
+            if (cart.length === 0) { alert('ตะกร้าว่างเปล่า!'); return; }
+            if (!confirm(`ยืนยันการสมัครทั้งหมด ${cart.length} ท่าน?`)) return;
 
-            const btn = document.querySelector('#cart-panel button');
-            const originalText = btn.innerText;
-            btn.innerText = 'Processing...';
-            btn.disabled = true;
+            const btns = document.querySelectorAll('button'); // Disable all buttons
+            btns.forEach(b => { b.disabled = true; b.innerText = 'Processing...'; });
 
             try {
                 const regApiUrl = API_URL.replace('/events', '/registrations');
@@ -356,13 +401,12 @@
                     const { tempId, price, ...data } = runner;
                     await fetch(regApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
                 }
-                alert('🎉 สมัครเรียบร้อย! (Success)');
+                alert('🎉 สมัครเรียบร้อย! ขอบคุณที่ร่วมกิจกรรม');
                 window.location.href = 'index.html';
             } catch (err) {
                 console.error(err);
                 alert('Error submitting');
-                btn.innerText = originalText;
-                btn.disabled = false;
+                btns.forEach(b => { b.disabled = false; b.innerText = 'ยืนยันและชำระเงิน'; });
             }
         }
 
