@@ -97,38 +97,16 @@
     <section class="bg-slate-50 py-16">
         <div class="container-wide px-4 sm:px-6 lg:px-8">
             <div class="mb-10">
-                <h2 class="text-3xl font-bold text-slate-900">งานวิ่งแนะนำ (Official) 🏆</h2>
-                <p class="text-slate-500 mt-2">งานคุณภาพที่เปิดรับสมัครผ่านระบบ Action.in.th</p>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full border border-blue-200">Official Events</span>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900" data-i18n="official_header">งานวิ่งแนะนำ 🏆</h2>
+                <p class="text-slate-500 mt-2" data-i18n="official_sub">งานคุณภาพที่เปิดรับสมัครผ่านระบบ Action.in.th</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col h-full">
-                    <div class="h-48 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1533561797500-4fad4750814e?auto=format&fit=crop&w=800" class="w-full h-full object-cover">
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-slate-700 shadow-sm">Road</div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <div class="flex items-center gap-2 text-xs font-bold text-brand-600 mb-2">📅 12 ส.ค. 2026</div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">Bangkok Midnight Marathon</h3>
-                        <div class="text-xs text-slate-500 mb-3">📍 กรุงเทพมหานคร</div>
-                        <div class="mt-auto pt-3 border-t border-slate-50 text-center">
-                            <span class="text-xs font-bold text-action-600" data-i18n="status_open">เปิดรับสมัครเร็วๆ นี้</span>
-                        </div>
-                    </div>
-                </div>
-                 <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col h-full">
-                    <div class="h-48 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=800" class="w-full h-full object-cover">
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-slate-700 shadow-sm">Trail</div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <div class="flex items-center gap-2 text-xs font-bold text-brand-600 mb-2">📅 15 ต.ค. 2026</div>
-                        <h3 class="text-base font-bold text-slate-900 mb-2">CMU Trail 2026</h3>
-                        <div class="text-xs text-slate-500 mb-3">📍 เชียงใหม่</div>
-                        <div class="mt-auto pt-3 border-t border-slate-50 text-center">
-                            <span class="text-xs font-bold text-action-600" data-i18n="status_open">เปิดรับสมัครเร็วๆ นี้</span>
-                        </div>
-                    </div>
+            <div id="official-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="col-span-full text-center py-12 text-slate-400">
+                    กำลังโหลดข้อมูล...
                 </div>
             </div>
         </div>
@@ -184,7 +162,7 @@
     <script>
         let currentLang = 'th';
 
-        // --- 1. ระบบภาษา (Language System) ---
+        // 1. Language Logic
         function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
         function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
 
@@ -193,13 +171,11 @@
             document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
             document.getElementById('lang-menu').classList.add('hidden');
             
-            // แปลข้อความที่มี attribute data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(translations[lang][key]) el.innerText = translations[lang][key];
             });
             
-            // แปล Placeholder
             if(lang === 'th') {
                 document.getElementById('new-title').placeholder = "เช่น Pattaya Beach Run 2026";
                 document.getElementById('new-submitter').placeholder = "ชื่อ-นามสกุล";
@@ -207,13 +183,15 @@
                 document.getElementById('new-title').placeholder = "e.g. Pattaya Beach Run 2026";
                 document.getElementById('new-submitter').placeholder = "Full Name";
             }
+
+            // โหลดข้อมูลใหม่เพื่อให้ภาษาในการ์ดเปลี่ยน
+            loadOfficialEvents();
         }
 
-        // --- 2. ระบบ Modal ---
+        // 2. Modal Logic
         function openSubmitModal() { document.getElementById('submit-modal').classList.remove('invisible'); document.getElementById('submit-modal').classList.add('active'); }
         function closeSubmitModal() { document.getElementById('submit-modal').classList.remove('active'); setTimeout(()=>document.getElementById('submit-modal').classList.add('invisible'), 200); }
         
-        // --- 3. ระบบส่งข้อมูลไป Backend ---
         async function handleFormSubmit() {
             const title = document.getElementById('new-title').value;
             const date = document.getElementById('new-date').value;
@@ -221,8 +199,7 @@
             if(!title || !date) return alert(currentLang === 'th' ? "กรุณากรอกชื่อและวันที่" : "Please enter title and date");
 
             const newEvent = {
-                title_th: title,
-                title_en: title,
+                title_th: title, title_en: title,
                 date: date,
                 location_th: document.getElementById('new-province').value,
                 submitter: document.getElementById('new-submitter').value,
@@ -231,28 +208,67 @@
             };
 
             try {
-                // ส่งไป Server
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newEvent)
-                });
-
+                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newEvent) });
                 if(res.ok) {
                     alert(currentLang === 'th' ? 'บันทึกสำเร็จ! ไปดูที่หน้าปฏิทินได้เลย' : 'Saved successfully!');
-                    window.location.href = 'calendar.html'; // ✅ พาไปหน้าปฏิทิน
-                } else {
-                    alert('Error saving data');
+                    window.location.href = 'calendar.html';
                 }
-            } catch(e) {
-                console.error(e);
-                alert('Connection Error');
+            } catch(e) { alert('Connection Error'); }
+        }
+
+        // 3. ✅ Official Events Loader (หัวใจสำคัญ: ดึงของจริงมาโชว์)
+        async function loadOfficialEvents() {
+            const container = document.getElementById('official-container');
+            
+            try {
+                const res = await fetch(API_URL);
+                const events = await res.json();
+                
+                // คัดกรองเอาเฉพาะงานที่มี is_official = true
+                const officialEvents = events.filter(e => e.is_official === true);
+
+                if(officialEvents.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">ยังไม่มีงาน Official ในระบบ</div>`;
+                    return;
+                }
+
+                container.innerHTML = officialEvents.map(e => `
+                    <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col h-full" onclick="window.location.href='detail.html?id=${e._id}'">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${e.image || 'https://images.unsplash.com/photo-1552674605-46d536733198?w=800'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            
+                            ${e.price ? `<div class="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-xs font-bold text-white shadow-sm">💰 ${e.price}</div>` : ''}
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="flex items-center gap-2 text-xs font-bold text-brand-600 mb-2">
+                                📅 ${e.date}
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition line-clamp-2">
+                                ${currentLang === 'th' ? e.title_th : (e.title_en || e.title_th)}
+                            </h3>
+                            <div class="text-xs text-slate-500 mb-3 flex items-center gap-1">
+                                📍 ${currentLang === 'th' ? e.location_th : (e.location_en || e.location_th)}
+                                ${e.distance ? `<span class="bg-slate-100 px-1.5 py-0.5 rounded ml-2 border border-slate-200 text-slate-500">${e.distance}</span>` : ''}
+                            </div>
+                            <div class="mt-auto pt-3 border-t border-slate-50 text-center">
+                                <span class="text-xs font-bold text-action-600">
+                                    ${currentLang === 'th' ? 'สมัครเลย' : 'Register Now'} →
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch(err) {
+                console.error(err);
+                container.innerHTML = `<div class="col-span-full text-center py-12 text-red-400">โหลดข้อมูลไม่สำเร็จ</div>`;
             }
         }
 
-        // เริ่มต้นด้วยภาษาไทย
+        // Start
         document.addEventListener('DOMContentLoaded', () => {
             changeLanguage('th');
+            // loadOfficialEvents ถูกเรียกใน changeLanguage แล้ว
         });
     </script>
 </body>
