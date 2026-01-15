@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - จัดการงานวิ่ง</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{font-family:'Prompt',sans-serif;}</style>
+
+    <script>
+        // ตั้งรหัสผ่านตรงนี้
+        const ADMIN_PASS = "1234"; 
+
+        // ตรวจสอบว่าเคยใส่รหัสหรือยัง
+        if (sessionStorage.getItem("isAdmin") !== "true") {
+            const input = prompt("กรุณาใส่รหัสผ่าน Admin เพื่อเข้าใช้งาน:");
+            
+            if (input === ADMIN_PASS) {
+                sessionStorage.setItem("isAdmin", "true"); // จำไว้ว่าผ่านแล้ว
+            } else {
+                alert("รหัสผ่านไม่ถูกต้อง!");
+                window.location.href = "../index.html"; // ดีดกลับไปหน้าแรกทันที
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-bold text-slate-800">Admin Dashboard 🛠️</h1>
+                <span class="bg-slate-200 text-slate-600 px-2 py-1 rounded text-xs">Login: Admin</span>
+            </div>
+            
+            <a href="../index.html" class="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                กลับหน้าหลัก
+            </a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-800 text-white">
+                    <tr>
+                        <th class="p-4 w-32">วันที่</th>
+                        <th class="p-4">ชื่องาน</th>
+                        <th class="p-4 w-48">ผู้ฝาก</th>
+                        <th class="p-4 w-32">สถานะ</th>
+                        <th class="p-4 w-48 text-center">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="event-table-body">
+                    <tr><td colspan="5" class="p-10 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 text-center text-slate-400 text-sm">
+            ระบบจัดการงานวิ่ง Action.in.th (Backend Connected)
+        </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    
+    <script>
+        // ฟังก์ชันดึงข้อมูลมาโชว์ในตาราง
+        async function fetchAdminEvents() {
+            try {
+                // API_URL มาจาก data.js (ซึ่งตอนนี้โหลดได้แล้วเพราะแก้ path)
+                const response = await fetch(API_URL); 
+                const data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('event-table-body').innerHTML = `
+                    <tr><td colspan="5" class="p-10 text-center text-red-500">
+                        เชื่อมต่อ Server ไม่ได้! <br>
+                        <span class="text-sm text-gray-400">(อย่าลืมเปิด Codespaces หรือเช็คว่าไฟล์ data.js เชื่อมถูกไหม)</span>
+                    </td></tr>`;
+            }
+        }
+
+        // วาดตาราง
+        function renderTable(events) {
+            const tbody = document.getElementById('event-table-body');
+            if(events.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-500">ยังไม่มีข้อมูลในระบบ</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = events.map(e => `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-4 whitespace-nowrap text-sm">${e.date}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800">${e.title_th}</div>
+                        <div class="text-xs text-slate-400">${e.location_th || '-'}</div>
+                    </td>
+                    <td class="p-4 text-sm text-slate-600">${e.submitter || '-'}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs font-bold border ${getStatusColor(e.status)}">
+                            ${e.status || 'open'}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex justify-center gap-1">
+                            ${e.status !== 'open' 
+                                ? `<button onclick="updateStatus('${e._id}', 'open')" class="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1.5 rounded text-xs font-bold transition">อนุมัติ</button>`
+                                : `<button onclick="updateStatus('${e._id}', 'closed')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded text-xs font-bold transition">ปิดรับ</button>`
+                            }
+                            <button onclick="deleteEvent('${e._id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded text-xs font-bold transition">ลบ</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            if (status === 'open') return 'bg-green-50 text-green-700 border-green-200';
+            if (status === 'closed') return 'bg-red-50 text-red-700 border-red-200';
+            return 'bg-yellow-50 text-yellow-700 border-yellow-200'; // pending
+        }
+
+        // ฟังก์ชัน อนุมัติ/แก้ไขสถานะ
+        async function updateStatus(id, newStatus) {
+            // ไม่ต้อง confirm บ่อยๆ ถ้าแค่อนุมัติ
+            const btnText = newStatus === 'open' ? 'อนุมัติงาน' : 'ปิดรับสมัคร';
+            if(!confirm(`ยืนยัน ${btnText}?`)) return;
+            
+            try {
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                fetchAdminEvents(); // โหลดตารางใหม่
+            } catch(e) { alert('Error updating status'); }
+        }
+
+        // ฟังก์ชัน ลบงาน
+        async function deleteEvent(id) {
+            if(!confirm('⚠️ คำเตือน: ยืนยันที่จะลบงานนี้ถาวร?')) return;
+
+            try {
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                fetchAdminEvents(); // โหลดตารางใหม่
+            } catch(e) { alert('Error deleting event'); }
+        }
+
+        // เริ่มทำงาน
+        fetchAdminEvents();
+    </script>
+</body>
+</html>
