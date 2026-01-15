@@ -19,30 +19,59 @@
             }
         }
     </script>
-    <style>body{background-color:#f8fafc;}</style>
+    <style>
+        body { background-color: #f8fafc; }
+        .container-wide { width: 100%; max-width: 95%; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1600px) { .container-wide { max-width: 1800px; } }
+        /* Modal Animation */
+        .modal { transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .modal.active { opacity: 1; visibility: visible; }
+    </style>
 </head>
-<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen">
+<body class="text-slate-800 font-sans antialiased flex flex-col min-h-screen relative" onclick="closeLangDropdown(event)">
 
     <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="container-wide px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-3 font-bold text-xl text-slate-800">
-                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md">A</div>
-                    Action.in.th
+                <a href="index.html" class="flex items-center gap-3 cursor-pointer">
+                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">A</div>
+                    <span class="font-bold text-xl text-slate-800">Action.in.th</span>
                 </a>
-                <a href="index.html" class="text-slate-500 hover:text-brand-600 font-medium">← กลับหน้าหลัก</a>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2">
+                        <a href="index.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_home">หน้าแรก</a>
+                        <a href="calendar.html" class="text-slate-500 hover:text-brand-600 px-3 py-2 text-sm font-medium transition" data-i18n="nav_calendar">ปฏิทินกิจกรรม</a>
+                        
+                        <button onclick="openSubmitModal()" class="flex items-center gap-2 bg-action-500 hover:bg-action-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span data-i18n="btn_submit">ฝากกิจกรรม</span>
+                        </button>
+                        
+                        <a href="login.html" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-medium hover:bg-slate-50 transition ml-2" data-i18n="nav_login">เข้าสู่ระบบ</a>
+                    </div>
+
+                    <div class="relative pl-2 border-l border-slate-200 md:border-none md:pl-0">
+                        <button onclick="toggleLangDropdown(event)" id="lang-btn" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 transition">
+                            <span class="text-base">🇹🇭</span> TH
+                        </button>
+                        <div id="lang-menu" class="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-slate-100 hidden z-50">
+                            <button onclick="changeLanguage('th')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇹🇭 Thai</button>
+                            <button onclick="changeLanguage('en')" class="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 flex items-center gap-3">🇬🇧 English</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
     <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
-        
         <div id="loading" class="text-center py-20 text-slate-400">กำลังโหลดข้อมูล...</div>
 
         <div id="content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <div class="lg:col-span-2 space-y-6">
-                <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-100 h-[300px] md:h-[400px] relative">
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-slate-100 h-[300px] md:h-[400px] relative bg-slate-200">
                     <img id="event-img" src="" class="w-full h-full object-cover">
                     <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-sm font-bold shadow text-brand-700">
                         Official Event 🏆
@@ -56,14 +85,14 @@
                         <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
                             <span class="text-2xl">📅</span>
                             <div>
-                                <div class="font-bold text-slate-900">วันที่จัดงาน</div>
+                                <div class="font-bold text-slate-900" data-i18n="form_date">วันที่จัดงาน</div>
                                 <div id="event-date">-</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
                             <span class="text-2xl">📍</span>
                             <div>
-                                <div class="font-bold text-slate-900">สถานที่</div>
+                                <div class="font-bold text-slate-900" data-i18n="form_province">สถานที่</div>
                                 <div id="event-loc">-</div>
                             </div>
                         </div>
@@ -82,21 +111,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <hr class="border-slate-100 my-6">
-                    
-                    <h3 class="font-bold text-lg mb-2">รายละเอียดเพิ่มเติม</h3>
-                    <p class="text-slate-500 leading-relaxed">
-                        มาร่วมเป็นส่วนหนึ่งของงานวิ่งครั้งยิ่งใหญ่! เส้นทางมาตรฐาน บรรยากาศดี พร้อมสิ่งอำนวยความสะดวกครบครัน 
-                        (ข้อมูลจำลอง: รายละเอียดจริงๆ จะดึงจาก Database ในอนาคต)
-                    </p>
                 </div>
             </div>
 
             <div class="lg:col-span-1">
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 sticky top-24">
                     <h2 class="text-xl font-bold mb-1 flex items-center gap-2">
-                        <span>📝</span> สมัครเข้าร่วมกิจกรรม
+                        <span>📝</span> <span data-i18n="reg_title">สมัครเข้าร่วมกิจกรรม</span>
                     </h2>
                     <p class="text-xs text-slate-400 mb-4">กรุณากรอกข้อมูลให้ครบถ้วน</p>
 
@@ -105,13 +126,13 @@
                         <input type="hidden" id="reg-event-name">
 
                         <div>
-                            <label class="label-text">ชื่อ-นามสกุล (ภาษาไทย/อังกฤษ)</label>
-                            <input type="text" id="reg-name" class="input-field" placeholder="สมชาย รักดี" required>
+                            <label class="label-text" data-i18n="form_contact_name">ชื่อ-นามสกุล</label>
+                            <input type="text" id="reg-name" class="input-field" placeholder="Full Name" required>
                         </div>
 
                         <div>
-                            <label class="label-text">ชื่อบน BIB (ภาษาอังกฤษ)</label>
-                            <input type="text" id="reg-bib" class="input-field" placeholder="SOMCHAI" required>
+                            <label class="label-text">ชื่อบน BIB (ENG)</label>
+                            <input type="text" id="reg-bib" class="input-field" placeholder="BIB Name" required>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -125,12 +146,11 @@
                             <div>
                                 <label class="label-text">ไซส์เสื้อ</label>
                                 <select id="reg-size" class="input-field">
-                                    <option value="XS">XS (34")</option>
-                                    <option value="S">S (36")</option>
-                                    <option value="M">M (38")</option>
-                                    <option value="L">L (40")</option>
-                                    <option value="XL">XL (42")</option>
-                                    <option value="2XL">2XL (44")</option>
+                                    <option value="XS">XS</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
                                 </select>
                             </div>
                         </div>
@@ -146,16 +166,16 @@
                             </div>
                             <div>
                                 <label class="label-text">เบอร์โทรศัพท์</label>
-                                <input type="tel" id="reg-phone" class="input-field" placeholder="08x-xxxxxxx" required>
+                                <input type="tel" id="reg-phone" class="input-field" placeholder="08x-xxx-xxxx" required>
                             </div>
                         </div>
 
                         <div>
-                            <label class="label-text">อีเมล (สำหรับรับผลการสมัคร)</label>
-                            <input type="email" id="reg-email" class="input-field" placeholder="example@email.com" required>
+                            <label class="label-text">อีเมล</label>
+                            <input type="email" id="reg-email" class="input-field" placeholder="Email" required>
                         </div>
 
-                        <button type="submit" class="w-full bg-action-500 hover:bg-action-600 text-white font-bold py-3 rounded-xl shadow-md transition transform hover:scale-[1.02] mt-4">
+                        <button type="submit" class="w-full bg-action-500 hover:bg-action-600 text-white font-bold py-3 rounded-xl shadow-md transition transform hover:scale-[1.02] mt-4" data-i18n="btn_register">
                             ยืนยันการสมัคร
                         </button>
                     </form>
@@ -165,8 +185,50 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-sm mt-auto">
+        <div class="flex justify-center gap-6 mb-4">
+            <a href="login.html" class="hover:text-brand-600" data-i18n="nav_login">เข้าสู่ระบบ</a>
+            <a href="admin/index.html" class="hover:text-brand-600">Admin Dashboard</a>
+        </div>
         &copy; 2026 Action.in.th
     </footer>
+
+    <div id="submit-modal" class="fixed inset-0 z-[70] flex items-center justify-center invisible opacity-0 modal">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSubmitModal()"></div>
+        <div class="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl z-20 flex flex-col max-h-[90vh] relative">
+            <div class="px-6 py-4 bg-action-500 rounded-t-2xl text-white font-bold flex justify-between items-center">
+                <span class="flex items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    <span data-i18n="form_title">ฝากกิจกรรมใหม่</span>
+                </span>
+                <button onclick="closeSubmitModal()" class="hover:bg-white/20 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto bg-white space-y-5">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_info">ข้อมูลกิจกรรม</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_name">ชื่อกิจกรรม *</label><input type="text" id="new-title" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-action-500 outline-none"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_date">วันที่ *</label><input type="date" id="new-date" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_province">จังหวัด *</label><select id="new-province" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option></select></div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_link">ลิงก์รับสมัคร</label><input type="url" id="new-link" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
+                    </div>
+                </div>
+                <hr class="border-slate-200 my-2">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 mb-3" data-i18n="form_sec_contact">ข้อมูลผู้ติดต่อ</h4>
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="form_contact_name">ชื่อผู้ติดต่อ *</label><input type="text" id="new-submitter" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm outline-none"></div>
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-4">
+                    <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-white border border-gray-300 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition" data-i18n="btn_cancel">ยกเลิก</button>
+                    <button onclick="handleFormSubmit()" class="flex-1 py-2.5 bg-action-500 rounded-xl text-sm font-bold text-white hover:bg-action-600 shadow-md transition" data-i18n="btn_save">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <style>
         .label-text { display: block; font-size: 0.875rem; font-weight: 500; color: #334155; margin-bottom: 0.25rem; }
@@ -176,49 +238,79 @@
 
     <script src="js/data.js"></script>
     <script>
-        // 1. ดึง ID จาก URL (เช่น detail.html?id=xxx)
+        let currentLang = 'th';
+        
+        // --- 1. Language & Navbar Logic ---
+        function toggleLangDropdown(e) { e.stopPropagation(); document.getElementById('lang-menu').classList.toggle('hidden'); }
+        function closeLangDropdown(e) { if(!e.target.closest('.relative')) document.getElementById('lang-menu').classList.add('hidden'); }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-btn').innerHTML = `<span class="text-base">${lang==='th'?'🇹🇭':'🇬🇧'}</span> ${lang.toUpperCase()}`;
+            document.getElementById('lang-menu').classList.add('hidden');
+            
+            // แปลข้อความ Static
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) el.innerText = translations[lang][key];
+            });
+
+            // แปล Placeholder
+            if(lang === 'th') {
+                if(document.getElementById('new-title')) document.getElementById('new-title').placeholder = "เช่น Pattaya Beach Run";
+                if(document.getElementById('reg-name')) document.getElementById('reg-name').placeholder = "ชื่อ-นามสกุล";
+            } else {
+                if(document.getElementById('new-title')) document.getElementById('new-title').placeholder = "e.g. Pattaya Beach Run";
+                if(document.getElementById('reg-name')) document.getElementById('reg-name').placeholder = "Full Name";
+            }
+        }
+
+        // --- 2. Modal Logic (สำหรับ Navbar) ---
+        function openSubmitModal() { document.getElementById('submit-modal').classList.remove('invisible'); document.getElementById('submit-modal').classList.add('active'); }
+        function closeSubmitModal() { document.getElementById('submit-modal').classList.remove('active'); setTimeout(()=>document.getElementById('submit-modal').classList.add('invisible'), 200); }
+        async function handleFormSubmit() {
+            // ... (Logic ฝากงาน เหมือนหน้าแรก)
+            alert("ขออภัย! กรุณาฝากงานผ่านหน้าแรก (ฟังก์ชันนี้ใช้โค้ดร่วมกัน)");
+            window.location.href = 'index.html';
+        }
+
+        // --- 3. Page Logic (ดึงข้อมูลงาน + สมัคร) ---
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
 
         async function init() {
-            if (!eventId) {
-                alert('ไม่พบรหัสกิจกรรม');
-                window.location.href = 'index.html';
-                return;
-            }
-
+            if (!eventId) { alert('ไม่พบรหัสกิจกรรม'); window.location.href = 'index.html'; return; }
             try {
-                // 2. ดึงข้อมูลงานวิ่งจาก API
                 const res = await fetch(`${API_URL}/${eventId}`);
                 if (!res.ok) throw new Error('Event not found');
                 const event = await res.json();
 
-                // 3. เอาข้อมูลมาแปะหน้าเว็บ
                 document.getElementById('event-img').src = event.image || 'https://via.placeholder.com/800x400';
-                document.getElementById('event-title').innerText = event.title_th;
+                // เลือกภาษาสำหรับ Title
+                const title = currentLang === 'th' ? event.title_th : (event.title_en || event.title_th);
+                document.getElementById('event-title').innerText = title;
                 document.getElementById('event-date').innerText = event.date;
-                document.getElementById('event-loc').innerText = event.location_th;
+                document.getElementById('event-loc').innerText = currentLang === 'th' ? event.location_th : (event.location_en || event.location_th);
                 document.getElementById('event-dist').innerText = event.distance || 'N/A';
                 document.getElementById('event-price').innerText = event.price || 'Free';
 
-                // แอบยัด ID และชื่อใส่ฟอร์มไว้ (User ไม่เห็น แต่จำเป็นต้องส่ง)
                 document.getElementById('reg-event-id').value = event._id;
                 document.getElementById('reg-event-name').value = event.title_th;
 
-                // โชว์เนื้อหา
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('content').classList.remove('hidden');
-
             } catch (err) {
-                console.error(err);
-                document.getElementById('loading').innerHTML = `<span class="text-red-500">โหลดข้อมูลล้มเหลว หรือไม่พบงานนี้</span>`;
+                document.getElementById('loading').innerHTML = `<span class="text-red-500">Error loading event</span>`;
             }
         }
 
-        // 4. ฟังก์ชันส่งใบสมัคร
         async function handleRegister(e) {
             e.preventDefault();
-            
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
             const formData = {
                 eventId: document.getElementById('reg-event-id').value,
                 eventName: document.getElementById('reg-event-name').value,
@@ -232,18 +324,8 @@
                 paymentStatus: 'pending'
             };
 
-            // เปลี่ยนปุ่มเป็น "กำลังบันทึก..."
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = 'กำลังบันทึก...';
-            btn.disabled = true;
-
             try {
-                // ยิงไปที่ Endpoint ใหม่ /registrations (ไม่ใช่ /events นะครับ!)
-                // URL ของ API ปกติคือ .../events เราต้องเปลี่ยนเป็น .../registrations
-                // วิธีแก้แบบง่าย: ตัดคำว่า events ออกแล้วเติม registrations แทน
                 const regApiUrl = API_URL.replace('/events', '/registrations');
-
                 const res = await fetch(regApiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -251,19 +333,20 @@
                 });
 
                 if (res.ok) {
-                    alert('🎉 สมัครสำเร็จ! ขอบคุณที่ร่วมกิจกรรม');
-                    window.location.href = 'index.html'; // กลับหน้าแรก
-                } else {
-                    throw new Error('Save failed');
-                }
+                    alert('🎉 สมัครสำเร็จ! (Registration Successful)');
+                    window.location.href = 'index.html';
+                } else throw new Error();
             } catch (err) {
-                alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+                alert('Error submitting registration');
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
         }
 
-        init();
+        document.addEventListener('DOMContentLoaded', () => {
+            changeLanguage('th'); // เริ่มต้นภาษาไทย
+            init(); // โหลดข้อมูลงาน
+        });
     </script>
 </body>
 </html>
