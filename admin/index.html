@@ -4,129 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Action.in.th</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        brand: { 500: '#0f172a', 600: '#020617' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .animate-slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: #f1f5f9; }
+        /* Custom Scrollbar for Modal */
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .input-std {
+            width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; 
+            border-radius: 0.5rem; font-size: 0.95rem; transition: all 0.2s;
+        }
+        .input-std:focus { border-color: #0f172a; ring: 2px solid #e2e8f0; outline: none; }
+        
+        .ticket-card-admin {
+            background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+            padding: 1rem; position: relative; transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .ticket-card-admin:hover { border-color: #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800">
+<body class="bg-slate-100 text-slate-800 h-screen overflow-hidden flex flex-col">
 
-    <div id="login-section" class="fixed inset-0 bg-slate-800 z-50 flex items-center justify-center p-4">
+    <div id="login-section" class="fixed inset-0 bg-slate-900 z-[60] flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm p-8 rounded-2xl shadow-2xl text-center">
-            <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
+            <div class="w-16 h-16 bg-slate-900 text-white rounded-xl mx-auto flex items-center justify-center text-2xl font-bold mb-4">A</div>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800">Admin Login</h2>
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center" placeholder="Password">
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700">เข้าสู่ระบบ</button>
+                <input type="password" id="admin-pass" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-center text-lg" placeholder="Password">
+                <button type="submit" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-black transition">เข้าสู่ระบบ</button>
             </form>
         </div>
     </div>
 
     <div id="dashboard-section" class="hidden flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
-            <div class="p-6 text-center border-b border-slate-700">
-                <h1 class="text-2xl font-bold text-blue-400">Action Admin</h1>
-                <p class="text-xs text-slate-400 mt-1">Backend Manager</p>
+        
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20 shrink-0">
+            <div class="p-6 text-center border-b border-slate-800">
+                <h1 class="text-2xl font-bold text-white tracking-wide">Action Admin</h1>
+                <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Backend System</p>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม</button>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <div class="text-xs text-slate-500 uppercase font-bold mt-4 mb-2 pl-2">Menu</div>
+                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-dashboard">📊 ภาพรวม (Overview)</button>
                 <button onclick="switchTab('official')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-official">🏆 จัดการ Event</button>
                 <button onclick="switchTab('registrations')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-registrations">👥 รายชื่อผู้สมัคร</button>
                 <button onclick="switchTab('requests')" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition" id="btn-requests">📩 คำขอฝากงาน</button>
             </nav>
-            <div class="p-4 border-t border-slate-700">
-                <a href="../index.html" target="_blank" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4 pl-2">🔗 เปิดหน้าเว็บจริง</a>
+            <div class="p-4 border-t border-slate-800">
+                <a href="../index.html" target="_blank" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4 pl-2">🔗 ไปหน้าเว็บหลัก</a>
                 <button onclick="logout()" class="w-full bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-2 rounded-lg text-sm font-bold transition">Logout</button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-8 relative bg-slate-100">
-            <div id="view-dashboard" class="content-view">
-                <h2 class="text-2xl font-bold mb-6">ภาพรวมระบบ 📈</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">ผู้สมัครทั้งหมด</div><div class="text-4xl font-bold text-indigo-600 mt-2" id="stat-regis">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">งาน Official</div><div class="text-4xl font-bold text-blue-600 mt-2" id="stat-official">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">งานฝาก (Calendar)</div><div class="text-4xl font-bold text-slate-700 mt-2" id="stat-total">0</div></div>
-                    <div class="bg-white p-6 rounded-xl shadow border border-slate-200"><div class="text-slate-500 text-sm">รอตรวจสอบ</div><div class="text-4xl font-bold text-yellow-500 mt-2" id="stat-pending">0</div></div>
+        <main class="flex-1 overflow-y-auto bg-slate-100 relative">
+            <div class="p-8 max-w-7xl mx-auto">
+                
+                <div id="view-dashboard" class="content-view">
+                    <h2 class="text-3xl font-bold mb-8 text-slate-800">ภาพรวมระบบ 📈</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><div class="text-slate-500 text-sm font-bold uppercase">ผู้สมัครทั้งหมด</div><div class="text-4xl font-bold text-indigo-600 mt-2" id="stat-regis">0</div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><div class="text-slate-500 text-sm font-bold uppercase">งาน Official</div><div class="text-4xl font-bold text-blue-600 mt-2" id="stat-official">0</div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><div class="text-slate-500 text-sm font-bold uppercase">งานฝาก (Calendar)</div><div class="text-4xl font-bold text-slate-700 mt-2" id="stat-total">0</div></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><div class="text-slate-500 text-sm font-bold uppercase">รอตรวจสอบ</div><div class="text-4xl font-bold text-yellow-500 mt-2" id="stat-pending">0</div></div>
+                    </div>
                 </div>
-            </div>
 
-            <div id="view-official" class="content-view hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">จัดการ Event หน้าบ้าน (Official) 🏆</h2>
-                    <button onclick="openOfficialModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 shadow flex gap-2">+ เพิ่มงาน</button>
+                <div id="view-official" class="content-view hidden">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-bold text-slate-800">จัดการ Event (Official) 🏆</h2>
+                        <button onclick="openOfficialModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black shadow-lg flex gap-2 items-center transform transition hover:-translate-y-1">
+                            <span class="text-xl">+</span> เพิ่มงานใหม่
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left"><tbody id="table-official"></tbody></table>
+                    </div>
                 </div>
-                <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left"><tbody id="table-official"></tbody></table>
-                </div>
-            </div>
 
-            <div id="view-registrations" class="content-view hidden">
-                <div id="regis-selector">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">เลือกงานเพื่อดูรายชื่อ 📂</h2>
-                        <input type="text" id="search-event" onkeyup="renderEventSelector()" placeholder="🔍 ค้นหาชื่องาน..." class="pl-4 pr-4 py-2 border border-slate-300 rounded-lg outline-none w-64">
+                <div id="view-registrations" class="content-view hidden">
+                    <div id="regis-selector">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-3xl font-bold text-slate-800">เลือกงานเพื่อดูรายชื่อ 📂</h2>
+                            <div class="relative">
+                                <input type="text" id="search-event" onkeyup="renderEventSelector()" placeholder="🔍 ค้นหาชื่องาน..." class="pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-500 outline-none w-80 shadow-sm">
+                                <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-600 uppercase tracking-wide">
+                                    <tr><th class="p-5 w-20 text-center">#</th><th class="p-5">ชื่องานวิ่ง</th><th class="p-5">วันที่</th><th class="p-5 text-center">ยอดสมัคร</th><th class="p-5 text-right">จัดการ</th></tr>
+                                </thead>
+                                <tbody id="regis-event-list" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b font-bold"><tr><th class="p-4 w-20 text-center">#</th><th class="p-4">ชื่องานวิ่ง</th><th class="p-4">วันที่</th><th class="p-4 text-center">ยอดสมัคร</th><th class="p-4 text-right">จัดการ</th></tr></thead>
-                            <tbody id="regis-event-list" class="divide-y divide-slate-100"></tbody>
-                        </table>
+                    <div id="regis-list" class="hidden animate-fade-in">
+                        <div class="flex items-center gap-6 mb-8">
+                            <button onclick="backToSelector()" class="bg-white border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition">← ย้อนกลับ</button>
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-800" id="current-event-name">-</h2>
+                                <p class="text-slate-500" id="current-event-count">-</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 font-bold text-slate-600"><tr><th class="p-4">BIB Name</th><th class="p-4">ชื่อ-สกุล</th><th class="p-4">เพศ</th><th class="p-4">ระยะ / ไซส์</th><th class="p-4">เบอร์โทร</th><th class="p-4 text-center">สถานะ</th></tr></thead>
+                                <tbody id="table-registrations-detail"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div id="regis-list" class="hidden">
-                    <div class="flex items-center gap-4 mb-6">
-                        <button onclick="backToSelector()" class="bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg text-sm font-bold">← ย้อนกลับ</button>
-                        <div><h2 class="text-2xl font-bold text-blue-800" id="current-event-name">-</h2><p class="text-sm text-slate-500" id="current-event-count">-</p></div>
-                    </div>
-                    <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b font-bold"><tr><th class="p-4">BIB Name</th><th class="p-4">ชื่อ-สกุล</th><th class="p-4">เพศ</th><th class="p-4">ระยะ / ไซส์</th><th class="p-4">เบอร์โทร</th><th class="p-4 text-center">สถานะ</th></tr></thead>
-                            <tbody id="table-registrations-detail"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div id="view-requests" class="content-view hidden">
-                <h2 class="text-2xl font-bold mb-6">คำขอฝากงาน 📩</h2>
-                <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left"><tbody id="table-requests"></tbody></table>
+                <div id="view-requests" class="content-view hidden">
+                    <h2 class="text-3xl font-bold mb-8 text-slate-800">คำขอฝากงาน (รออนุมัติ) 📩</h2>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left"><tbody id="table-requests"></tbody></table>
+                    </div>
                 </div>
+
             </div>
         </main>
     </div>
 
-    <div id="official-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeOfficialModal()"></div>
-        <div class="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl p-6 overflow-y-auto animate-slide-in">
-            <h3 class="text-xl font-bold mb-4" id="modal-title">จัดการ Event Official</h3>
-            <form onsubmit="handleOfficialSubmit(event)" class="space-y-4">
-                <input type="hidden" id="off-id">
-                <div><label class="block text-sm font-bold mb-1">ชื่องาน (TH)</label><input type="text" id="off-title" class="w-full border p-2 rounded-lg" required></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-bold mb-1">วันที่จัดงาน</label><input type="date" id="off-date" class="w-full border p-2 rounded-lg" required></div>
-                    <div><label class="block text-sm font-bold mb-1">จังหวัด</label><select id="off-province" class="w-full border p-2 rounded-lg"><option value="Bangkok">Bangkok</option><option value="Chiang Mai">Chiang Mai</option><option value="Phuket">Phuket</option></select></div>
+    <div id="official-modal" class="fixed inset-0 z-50 hidden bg-slate-100/90 backdrop-blur-sm">
+        <div class="w-full h-full bg-white flex flex-col animate-slide-in">
+            
+            <div class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm shrink-0 z-10">
+                <h3 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <span class="bg-slate-900 text-white w-10 h-10 rounded-lg flex items-center justify-center text-lg">E</span>
+                    <span id="modal-title">จัดการ Event</span>
+                </h3>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeOfficialModal()" class="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition">ยกเลิก</button>
+                    <button onclick="document.getElementById('official-form-submit').click()" class="px-8 py-2.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30 transition">บันทึกข้อมูล</button>
                 </div>
-                
-                <div class="border p-4 rounded-xl bg-slate-50">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-bold text-slate-700">ประเภทบัตร & ราคา (Tickets)</label>
-                        <button type="button" onclick="addTicketRow()" class="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 font-bold shadow">+ เพิ่มประเภทบัตร</button>
-                    </div>
-                    <div id="ticket-container" class="space-y-3"></div>
-                </div>
+            </div>
 
-                <div><label class="block text-sm font-bold mb-1">URL รูปโปสเตอร์</label><input type="text" id="off-image" class="w-full border p-2 rounded-lg"></div>
-                <div><label class="block text-sm font-bold mb-1">ลิงก์รายละเอียดเพิ่มเติม</label><input type="text" id="off-link" class="w-full border p-2 rounded-lg"></div>
-                
-                <div class="pt-4 flex gap-3 border-t mt-4">
-                    <button type="button" onclick="closeOfficialModal()" class="flex-1 py-3 bg-slate-100 rounded-lg font-bold">ยกเลิก</button>
-                    <button type="submit" class="flex-1 py-3 bg-blue-600 rounded-lg font-bold text-white shadow">บันทึก</button>
-                </div>
-            </form>
+            <div class="flex-1 overflow-y-auto modal-scroll bg-slate-50 p-8">
+                <form id="official-form" onsubmit="handleOfficialSubmit(event)" class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <input type="hidden" id="off-id">
+
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-lg mb-4 text-slate-700 border-b pb-2">1. ข้อมูลทั่วไป (Basic Info)</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold mb-1 text-slate-600">ชื่องาน (ภาษาไทย)</label>
+                                    <input type="text" id="off-title" class="input-std" required placeholder="เช่น วิ่งมาราธอนการกุศล ครั้งที่ 1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-1 text-slate-600">ชื่องาน (ภาษาอังกฤษ)</label>
+                                    <input type="text" id="off-title-en" class="input-std" placeholder="e.g. Charity Marathon 2026">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold mb-1 text-slate-600">วันที่จัดงาน</label>
+                                        <input type="date" id="off-date" class="input-std" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold mb-1 text-slate-600">จังหวัด</label>
+                                        <select id="off-province" class="input-std">
+                                            <option value="Bangkok">Bangkok</option>
+                                            <option value="Chiang Mai">Chiang Mai</option>
+                                            <option value="Phuket">Phuket</option>
+                                            <option value="Chonburi">Chonburi</option>
+                                            <option value="Khon Kaen">Khon Kaen</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-lg mb-4 text-slate-700 border-b pb-2">2. สื่อและลิงก์ (Media)</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold mb-1 text-slate-600">URL รูปโปสเตอร์</label>
+                                    <input type="text" id="off-image" class="input-std" placeholder="https://..." onchange="document.getElementById('preview-img').src = this.value || 'https://via.placeholder.com/600x300?text=No+Image'">
+                                    <div class="mt-3 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 h-40 flex items-center justify-center">
+                                        <img id="preview-img" src="https://via.placeholder.com/600x300?text=Preview" class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-1 text-slate-600">ลิงก์รายละเอียดเพิ่มเติม</label>
+                                    <input type="text" id="off-link" class="input-std" placeholder="https://facebook.com/event...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full">
+                            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                                <h4 class="font-bold text-lg text-slate-700">3. จัดการบัตร (Tickets & Pricing)</h4>
+                                <button type="button" onclick="addTicketRow()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-2">
+                                    <span>+ เพิ่มประเภทบัตร</span>
+                                </button>
+                            </div>
+                            
+                            <div id="ticket-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                </div>
+                            
+                            <div id="empty-ticket-msg" class="text-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-300 hidden">
+                                ยังไม่มีประเภทบัตร กดปุ่ม "+ เพิ่มประเภทบัตร" ด้านบน
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="official-form-submit" class="hidden"></button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -135,6 +239,7 @@
         const ADMIN_PASS = "1234";
         let allEvents = [], allRegis = [];
 
+        // --- AUTH & INIT ---
         function checkAuth() {
             if (sessionStorage.getItem("isAdmin") === "true") {
                 document.getElementById('login-section').classList.add('hidden');
@@ -145,6 +250,7 @@
         function handleLogin(e) { e.preventDefault(); if(document.getElementById('admin-pass').value===ADMIN_PASS){sessionStorage.setItem("isAdmin","true");checkAuth();}else alert("รหัสผิด!"); }
         function logout() { sessionStorage.removeItem("isAdmin"); window.location.reload(); }
 
+        // --- DATA ---
         async function fetchData() {
             try {
                 const resE = await fetch(API_URL); allEvents = await resE.json();
@@ -158,66 +264,102 @@
             const userEvents = allEvents.filter(e => !e.is_official);
             const pendingEvents = userEvents.filter(e => e.status === 'pending');
 
+            // Stats
             document.getElementById('stat-official').innerText = officialEvents.length;
             document.getElementById('stat-total').innerText = userEvents.length;
             document.getElementById('stat-pending').innerText = pendingEvents.length;
             document.getElementById('stat-regis').innerText = allRegis.length;
 
+            // Table: Official
             document.getElementById('table-official').innerHTML = officialEvents.map(e => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4 flex items-center gap-3"><img src="${e.image||'https://via.placeholder.com/50'}" class="w-10 h-10 rounded object-cover"><b>${e.title_th}</b></td>
-                    <td class="p-4 text-sm">${e.date}</td>
-                    <td class="p-4 text-center">
-                        <button onclick='editOfficial(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-xs font-bold mr-1">แก้ไข</button>
-                        <button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded text-xs font-bold">ลบ</button>
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-5 flex items-center gap-4">
+                        <img src="${e.image||'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-lg object-cover shadow-sm bg-slate-200">
+                        <div>
+                            <div class="font-bold text-slate-800">${e.title_th}</div>
+                            <div class="text-xs text-slate-500">${e.location_th}</div>
+                        </div>
                     </td>
-                </tr>`).join('');
+                    <td class="p-5 text-sm text-slate-600">${e.date}</td>
+                    <td class="p-5 text-center">
+                        <button onclick='editOfficial(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold mr-2 hover:bg-blue-100 transition">แก้ไข</button>
+                        <button onclick="deleteEvent('${e._id}')" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition">ลบ</button>
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colspan="4" class="p-10 text-center text-slate-400">ยังไม่มีงาน Official</td></tr>`;
 
+            // Table: Requests
             document.getElementById('table-requests').innerHTML = pendingEvents.map(e => `
-                <tr class="border-b hover:bg-slate-50"><td class="p-4 text-sm">${e.date}</td><td class="p-4 font-bold text-sm">${e.title_th}</td><td class="p-4 text-sm text-slate-500">${e.submitter}</td><td class="p-4 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-2 py-1 rounded text-xs">ลบ</button></td></tr>`).join('');
+                <tr class="border-b hover:bg-slate-50"><td class="p-5 text-sm">${e.date}</td><td class="p-5 font-bold text-slate-700">${e.title_th}</td><td class="p-5 text-sm text-slate-500">${e.submitter}</td><td class="p-5 text-center"><button onclick="updateStatus('${e._id}','open')" class="bg-green-500 text-white px-3 py-1 rounded text-xs mr-2 hover:bg-green-600">อนุมัติ</button><button onclick="deleteEvent('${e._id}')" class="bg-red-100 text-red-500 px-3 py-1 rounded text-xs hover:bg-red-200">ลบ</button></td></tr>
+            `).join('');
 
             renderEventSelector();
         }
 
-        // --- TICKET MANAGER (Updated for Super Early Bird) ---
+        // --- NEW: TICKET CARD MANAGER ---
         function addTicketRow(data = {}) {
             const container = document.getElementById('ticket-container');
             const div = document.createElement('div');
-            div.className = "bg-white p-3 rounded-lg border border-slate-200 ticket-row shadow-sm relative";
+            // ใช้ Class "ticket-row" เพื่อให้ JS ดึงค่าได้เหมือนเดิม
+            div.className = "ticket-card-admin ticket-row animate-slide-in flex flex-col gap-3";
             div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-400 hover:text-red-600 font-bold px-2">×</button>
-                <div class="grid grid-cols-2 gap-3 mb-3">
-                    <div><label class="text-[10px] text-slate-500 font-bold">ชื่อระยะ (เช่น 10K)</label><input type="text" class="t-name w-full border p-1.5 text-sm rounded bg-slate-50" value="${data.name || ''}" placeholder="Distance"></div>
-                    <div><label class="text-[10px] text-slate-500 font-bold">ราคาปกติ (Normal)</label><input type="number" class="t-price w-full border p-1.5 text-sm rounded bg-slate-50 font-bold" value="${data.price || ''}" placeholder="Bath"></div>
+                <div class="flex justify-between items-start mb-2 border-b pb-2 border-dashed border-slate-200">
+                    <span class="text-xs font-bold text-slate-400 uppercase">Ticket Type</span>
+                    <button type="button" onclick="this.closest('.ticket-card-admin').remove()" class="text-red-400 hover:text-red-600 font-bold px-2 text-lg">×</button>
                 </div>
-                <div class="grid grid-cols-12 gap-2 bg-yellow-50 p-2 rounded mb-2 border border-yellow-100">
-                    <div class="col-span-12 text-[10px] font-bold text-yellow-700">Early Bird (โปรโมชั่น)</div>
-                    <div class="col-span-5"><input type="number" class="t-eb-price w-full border p-1 text-xs rounded" value="${data.earlyBirdPrice || ''}" placeholder="ราคาพิเศษ"></div>
-                    <div class="col-span-7"><input type="date" class="t-eb-date w-full border p-1 text-xs rounded" value="${data.earlyBirdDate || ''}"></div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold block mb-1">ระยะทาง (Name)</label>
+                        <input type="text" class="t-name w-full border border-slate-300 p-1.5 text-sm rounded focus:ring-1 focus:ring-blue-500 outline-none font-bold text-slate-700" value="${data.name || ''}" placeholder="10K">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 font-bold block mb-1">ราคาปกติ (Normal)</label>
+                        <input type="number" class="t-price w-full border border-slate-300 p-1.5 text-sm rounded focus:ring-1 focus:ring-blue-500 outline-none" value="${data.price || ''}" placeholder="800">
+                    </div>
                 </div>
-                <div class="grid grid-cols-12 gap-2 bg-red-50 p-2 rounded border border-red-100">
-                    <div class="col-span-12 text-[10px] font-bold text-red-700">Super Early Bird (โปรเปิดตัว)</div>
-                    <div class="col-span-5"><input type="number" class="t-seb-price w-full border p-1 text-xs rounded" value="${data.superEarlyBirdPrice || ''}" placeholder="ถูกสุดๆ"></div>
-                    <div class="col-span-7"><input type="date" class="t-seb-date w-full border p-1 text-xs rounded" value="${data.superEarlyBirdDate || ''}"></div>
+
+                <div class="bg-yellow-50 p-2 rounded border border-yellow-100">
+                    <label class="text-[10px] font-bold text-yellow-700 block mb-1">⚡ Early Bird</label>
+                    <div class="flex gap-2">
+                        <input type="number" class="t-eb-price w-1/3 border border-yellow-200 p-1 text-xs rounded" value="${data.earlyBirdPrice || ''}" placeholder="Price">
+                        <input type="date" class="t-eb-date w-2/3 border border-yellow-200 p-1 text-xs rounded" value="${data.earlyBirdDate || ''}">
+                    </div>
+                </div>
+
+                <div class="bg-red-50 p-2 rounded border border-red-100">
+                    <label class="text-[10px] font-bold text-red-700 block mb-1">🔥 Super Early Bird</label>
+                    <div class="flex gap-2">
+                        <input type="number" class="t-seb-price w-1/3 border border-red-200 p-1 text-xs rounded" value="${data.superEarlyBirdPrice || ''}" placeholder="Price">
+                        <input type="date" class="t-seb-date w-2/3 border border-red-200 p-1 text-xs rounded" value="${data.superEarlyBirdDate || ''}">
+                    </div>
                 </div>
             `;
             container.appendChild(div);
+            document.getElementById('empty-ticket-msg').classList.add('hidden');
         }
 
+        // --- MODAL LOGIC ---
         function openOfficialModal() { 
             document.getElementById('off-id').value = ''; 
-            ['off-title','off-date','off-province','off-image','off-link'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('modal-title').innerText = "เพิ่มงานใหม่ (New Event)";
+            ['off-title','off-title-en','off-date','off-province','off-image','off-link'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('preview-img').src = 'https://via.placeholder.com/600x300?text=Preview';
+            
             document.getElementById('ticket-container').innerHTML = '';
-            addTicketRow(); // Add default
+            addTicketRow(); // Add 1 default card
             document.getElementById('official-modal').classList.remove('hidden'); 
         }
 
         function editOfficial(e) {
             document.getElementById('off-id').value = e._id;
+            document.getElementById('modal-title').innerText = "แก้ไขงาน (Edit Event)";
             document.getElementById('off-title').value = e.title_th;
+            document.getElementById('off-title-en').value = e.title_en || '';
             document.getElementById('off-date').value = e.date;
             document.getElementById('off-province').value = e.location_th;
             document.getElementById('off-image').value = e.image || '';
+            document.getElementById('preview-img').src = e.image || 'https://via.placeholder.com/600x300?text=No+Image';
             document.getElementById('off-link').value = e.link || '';
             
             document.getElementById('ticket-container').innerHTML = '';
@@ -230,6 +372,7 @@
 
         async function handleOfficialSubmit(e) {
             e.preventDefault();
+            // Logic ดึงค่าจาก Ticket Cards (ใช้ class เดิม t-name, t-price)
             const tickets = [];
             document.querySelectorAll('.ticket-row').forEach(row => {
                 const name = row.querySelector('.t-name').value;
@@ -249,6 +392,7 @@
             const id = document.getElementById('off-id').value;
             const data = {
                 title_th: document.getElementById('off-title').value,
+                title_en: document.getElementById('off-title-en').value,
                 date: document.getElementById('off-date').value,
                 location_th: document.getElementById('off-province').value,
                 image: document.getElementById('off-image').value,
@@ -259,20 +403,19 @@
             
             const url = id ? `${API_URL}/${id}` : API_URL;
             const method = id ? 'PATCH' : 'POST';
-            try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('Success!'); } catch(err) { alert('Error'); }
+            try { await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); closeOfficialModal(); fetchData(); alert('บันทึกสำเร็จ!'); } catch(err) { alert('Error saving event'); }
         }
 
-        // --- Render Helpers ---
+        // --- HELPER: Regis View ---
         function renderEventSelector() {
             let list = allEvents.filter(e => e.is_official);
             list.sort((a, b) => new Date(b.date) - new Date(a.date));
             const keyword = document.getElementById('search-event').value.toLowerCase();
             if (keyword) list = list.filter(e => e.title_th.toLowerCase().includes(keyword));
 
-            const container = document.getElementById('regis-event-list');
-            container.innerHTML = list.map((e, index) => {
+            document.getElementById('regis-event-list').innerHTML = list.map((e, index) => {
                 const count = allRegis.filter(r => r.eventId === e._id).length;
-                return `<tr onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="hover:bg-blue-50 cursor-pointer border-b last:border-0"><td class="p-4 text-center font-mono text-slate-400">${list.length - index}</td><td class="p-4 font-bold text-slate-700">${e.title_th}</td><td class="p-4 text-slate-500">${e.date}</td><td class="p-4 text-center font-bold text-blue-600">${count}</td><td class="p-4 text-right"><button class="text-sm font-bold text-slate-400">View</button></td></tr>`;
+                return `<tr onclick="viewRegistrations('${e._id}', '${e.title_th}')" class="hover:bg-blue-50 cursor-pointer border-b last:border-0 transition"><td class="p-5 text-center font-mono text-slate-400 font-bold">${list.length - index}</td><td class="p-5 font-bold text-slate-700">${e.title_th}</td><td class="p-5 text-slate-500">${e.date}</td><td class="p-5 text-center font-bold text-blue-600 bg-blue-50/50 rounded-lg">${count}</td><td class="p-5 text-right"><button class="text-sm font-bold text-slate-400 hover:text-blue-600">View →</button></td></tr>`;
             }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-400">ไม่พบข้อมูล</td></tr>';
         }
 
@@ -281,12 +424,12 @@
             document.getElementById('current-event-name').innerText = `รายชื่อ: ${name}`;
             document.getElementById('current-event-count').innerText = `จำนวน ${filtered.length} คน`;
             document.getElementById('table-registrations-detail').innerHTML = filtered.map(r => `
-                <tr class="border-b hover:bg-slate-50"><td class="p-4 font-mono font-bold">${r.bibName}</td><td class="p-4">${r.fullName}</td><td class="p-4 text-sm">${r.gender}</td><td class="p-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs border">${r.distance} / ${r.shirtSize}</span></td><td class="p-4 text-sm">${r.phone}</td><td class="p-4 text-center"><span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded">Pending</span></td></tr>`).join('') || '<tr><td colspan="6" class="p-8 text-center">ไม่มีข้อมูล</td></tr>';
+                <tr class="border-b hover:bg-slate-50 transition"><td class="p-4 font-mono font-bold text-slate-600">${r.bibName}</td><td class="p-4 font-bold">${r.fullName}</td><td class="p-4 text-sm">${r.gender}</td><td class="p-4"><span class="bg-slate-100 px-2 py-1 rounded text-xs border border-slate-200 font-medium">${r.distance} • ${r.shirtSize}</span></td><td class="p-4 text-sm text-slate-500">${r.phone}</td><td class="p-4 text-center"><span class="bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full font-bold">Pending</span></td></tr>`).join('') || '<tr><td colspan="6" class="p-10 text-center text-slate-400">ยังไม่มีผู้สมัคร</td></tr>';
             document.getElementById('regis-selector').classList.add('hidden');
             document.getElementById('regis-list').classList.remove('hidden');
         }
         function backToSelector() { document.getElementById('regis-list').classList.add('hidden'); document.getElementById('regis-selector').classList.remove('hidden'); }
-        
+
         function switchTab(tab) {
             document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-slate-800', 'text-white'));
